@@ -1,15 +1,12 @@
 <?php
 
 include_once __DIR__ . '/../Model/m_koneksi.php';
-include_once __DIR__ . '/../Model/m_user.php';
+include_once __DIR__ . '/../Model/m_alat.php';
 
 $koneksi = new koneksi();
+$model = new m_alat($koneksi->koneksi);
 
-$model = new m_user(
-    $koneksi->koneksi
-);
-
-$dataUser = $model->tampilUser();
+$dataAlat = $model->tampilAlat();
 
 ?>
 
@@ -21,7 +18,7 @@ $dataUser = $model->tampilUser();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>pinjam.in — Data User</title>
+<title>pinjam.in — Data Alat</title>
 
 <style>
 
@@ -83,7 +80,6 @@ a{
     display:flex;
     align-items:center;
     justify-content:center;
-    flex-shrink:0;
 }
 
 .brand .logo svg{
@@ -98,7 +94,6 @@ a{
 .brand-text .name{
     font-weight:800;
     font-size:16px;
-    color:#fff;
 }
 
 .brand-text .tag{
@@ -127,7 +122,6 @@ a{
     font-weight:600;
     color:#dce9e7;
     margin-bottom:2px;
-    transition:background .15s ease;
 }
 
 .nav-item:hover{
@@ -142,12 +136,6 @@ a{
 .nav-item svg{
     width:16px;
     height:16px;
-    flex-shrink:0;
-    opacity:.85;
-}
-
-.nav-item.active svg{
-    opacity:1;
 }
 
 .sidebar-footer{
@@ -212,7 +200,6 @@ a{
     color:#fff;
     font-size:13px;
     font-weight:700;
-    cursor:pointer;
 }
 
 .btn-add:hover{
@@ -242,7 +229,6 @@ a{
 .search-box{
     display:flex;
     align-items:center;
-    gap:8px;
     border:1px solid var(--card-border);
     background:#fff;
     border-radius:8px;
@@ -275,6 +261,7 @@ thead th{
     font-weight:700;
     padding:0 10px 10px;
     border-bottom:1px solid var(--card-border);
+    white-space:nowrap;
 }
 
 tbody td{
@@ -301,17 +288,32 @@ tbody tr:last-child td{
     font-weight:700;
 }
 
-.badge-admin{
+.badge-baik{
     background:#d9efe9;
     color:#0f6b64;
 }
 
-.badge-petugas{
+.badge-ringan{
     background:#fdecd2;
     color:#8a5a10;
 }
 
-.badge-peminjam{
+.badge-berat{
+    background:#fbdede;
+    color:#a53939;
+}
+
+.badge-tersedia{
+    background:#d9efe9;
+    color:#0f6b64;
+}
+
+.badge-dipinjam{
+    background:#fdecd2;
+    color:#8a5a10;
+}
+
+.badge-nonaktif{
     background:#e4e0e6;
     color:#5b5363;
 }
@@ -336,17 +338,9 @@ tbody tr:last-child td{
     color:var(--teal-deep);
 }
 
-.btn-edit:hover{
-    background:#d6e8e5;
-}
-
 .btn-delete{
     background:#fbe3e3;
     color:#a53939;
-}
-
-.btn-delete:hover{
-    background:#f5d1d1;
 }
 
 @media(max-width:700px){
@@ -392,6 +386,8 @@ tbody tr:last-child td{
 <body>
 
 <div class="layout">
+
+<!-- SIDEBAR -->
 
 <aside class="sidebar">
 
@@ -457,221 +453,82 @@ tbody tr:last-child td{
 
     </div>
 
+
     <div class="nav-group-label">
         Menu Utama
     </div>
 
-    <a
-        class="nav-item"
-        href="v_homeadmin.php">
 
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
-            <rect
-                x="3"
-                y="3"
-                width="7"
-                height="9"
-                rx="1"/>
-
-            <rect
-                x="14"
-                y="3"
-                width="7"
-                height="5"
-                rx="1"/>
-
-            <rect
-                x="14"
-                y="12"
-                width="7"
-                height="9"
-                rx="1"/>
-
-            <rect
-                x="3"
-                y="16"
-                width="7"
-                height="5"
-                rx="1"/>
-
-        </svg>
+    <a class="nav-item"
+       href="v_homeadmin.php">
 
         Dashboard
 
     </a>
 
+
     <div class="nav-group-label">
         Kelola Data
     </div>
 
-    <a
-        class="nav-item active"
-        href="v_user.php">
 
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
-            <circle
-                cx="12"
-                cy="8"
-                r="4"/>
-
-            <path
-                d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
-
-        </svg>
+    <a class="nav-item"
+       href="v_user.php">
 
         Data User
 
     </a>
 
-    <a
-        class="nav-item"
-        href="v_alat.php">
 
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
-            <path
-                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-
-        </svg>
+    <a class="nav-item active"
+       href="v_alat.php">
 
         Data Alat
 
     </a>
 
-    <a
-        class="nav-item"
-        href="v_kategori.php">
 
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
-            <path
-                d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83-2.83Z"/>
-
-            <circle
-                cx="7"
-                cy="7"
-                r="1"/>
-
-        </svg>
+    <a class="nav-item"
+       href="v_kategori.php">
 
         Kategori
 
     </a>
 
-    <a
-        class="nav-item"
-        href="v_peminjaman.php">
 
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
-            <path
-                d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-
-            <rect
-                x="9"
-                y="3"
-                width="6"
-                height="4"
-                rx="1"/>
-
-        </svg>
+    <a class="nav-item"
+       href="v_peminjaman.php">
 
         Data Peminjaman
 
     </a>
 
-    <a
-        class="nav-item"
-        href="v_pengembalian.php">
 
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
-            <path d="M3 7v6h6"/>
-
-            <path
-                d="M3 13a9 9 0 1 0 3-6.7L3 9"/>
-
-        </svg>
+    <a class="nav-item"
+       href="v_pengembalian.php">
 
         Data Pengembalian
 
     </a>
 
+
     <div class="nav-group-label">
         Lainnya
     </div>
 
-    <a
-        class="nav-item"
-        href="v_log.php">
 
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
-            <path d="M12 8v4l3 3"/>
-
-            <circle
-                cx="12"
-                cy="12"
-                r="9"/>
-
-        </svg>
+    <a class="nav-item"
+       href="v_log.php">
 
         Log Aktivitas
 
     </a>
 
+
     <div class="sidebar-footer">
 
-        <a
-            class="logout-btn"
-            href="v_logout.php">
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2">
-
-                <path
-                    d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-
-                <path
-                    d="M16 17l5-5-5-5"/>
-
-                <path
-                    d="M21 12H9"/>
-
-            </svg>
+        <a class="logout-btn"
+           href="v_logout.php">
 
             Keluar
 
@@ -681,6 +538,9 @@ tbody tr:last-child td{
 
 </aside>
 
+
+<!-- MAIN -->
+
 <main class="main">
 
     <div class="topbar">
@@ -688,53 +548,71 @@ tbody tr:last-child td{
         <div>
 
             <h1>
-                Data User
+                Data Alat
             </h1>
 
             <p>
-                Kelola akun admin, petugas, dan peminjam.
+                Kelola data alat yang tersedia untuk dipinjam.
             </p>
 
         </div>
 
+
         <a
-            href="v_tambah_user.php"
+            href="v_tambah_alat.php"
             class="btn-add">
 
-            + Tambah User
+            + Tambah Alat
 
         </a>
 
     </div>
+
 
     <div class="panel">
 
         <div class="panel-header">
 
             <h2 class="panel-title">
-                Daftar User
+                Daftar Alat
             </h2>
+
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="search"
+                    placeholder="Cari alat..."
+                >
+
+            </div>
 
         </div>
 
+
         <div class="table-wrapper">
 
-            <table>
+            <table id="tabelAlat">
 
                 <thead>
 
                     <tr>
 
                         <th>No</th>
-                        <th>Nama</th>
-                        <th>Username</th>
-                        <th>Role</th>
-                        <th>No. Telepon</th>
+                        <th>Kode</th>
+                        <th>Nama Alat</th>
+                        <th>Merk</th>
+                        <th>Jumlah</th>
+                        <th>Kondisi</th>
+                        <th>Status</th>
+                        <th>Deskripsi</th>
                         <th>Aksi</th>
 
                     </tr>
 
                 </thead>
+
 
                 <tbody>
 
@@ -743,12 +621,12 @@ tbody tr:last-child td{
                 $no = 1;
 
                 if (
-                    $dataUser &&
-                    mysqli_num_rows($dataUser) > 0
+                    $dataAlat &&
+                    mysqli_num_rows($dataAlat) > 0
                 ):
 
                     while (
-                        $user = mysqli_fetch_assoc($dataUser)
+                        $alat = mysqli_fetch_assoc($dataAlat)
                     ):
 
                 ?>
@@ -759,70 +637,119 @@ tbody tr:last-child td{
                             <?= $no++ ?>
                         </td>
 
-                        <td>
-                            <?= htmlspecialchars(
-                                $user['nama']
-                            ) ?>
-                        </td>
 
                         <td>
                             <?= htmlspecialchars(
-                                $user['username']
+                                $alat['kode_alat']
                             ) ?>
                         </td>
+
+
+                        <td>
+                            <?= htmlspecialchars(
+                                $alat['nama_alat']
+                            ) ?>
+                        </td>
+
+
+                        <td>
+                            <?= htmlspecialchars(
+                                $alat['merk'] ?? '-'
+                            ) ?>
+                        </td>
+
+
+                        <td>
+                            <?= htmlspecialchars(
+                                $alat['jumlah']
+                            ) ?>
+                        </td>
+
 
                         <td>
 
                             <?php if (
-                                $user['role'] == 'admin'
+                                $alat['kondisi'] == 'baik'
                             ): ?>
 
-                                <span class="badge badge-admin">
-                                    Admin
+                                <span class="badge badge-baik">
+                                    Baik
                                 </span>
 
                             <?php elseif (
-                                $user['role'] == 'petugas'
+                                $alat['kondisi'] == 'rusak_ringan'
                             ): ?>
 
-                                <span class="badge badge-petugas">
-                                    Petugas
+                                <span class="badge badge-ringan">
+                                    Rusak Ringan
                                 </span>
 
                             <?php else: ?>
 
-                                <span class="badge badge-peminjam">
-                                    Peminjam
+                                <span class="badge badge-berat">
+                                    Rusak Berat
                                 </span>
 
                             <?php endif; ?>
 
                         </td>
 
+
+                        <td>
+
+                            <?php if (
+                                $alat['status'] == 'tersedia'
+                            ): ?>
+
+                                <span class="badge badge-tersedia">
+                                    Tersedia
+                                </span>
+
+                            <?php elseif (
+                                $alat['status'] == 'dipinjam'
+                            ): ?>
+
+                                <span class="badge badge-dipinjam">
+                                    Dipinjam
+                                </span>
+
+                            <?php else: ?>
+
+                                <span class="badge badge-nonaktif">
+                                    Tidak Aktif
+                                </span>
+
+                            <?php endif; ?>
+
+                        </td>
+
+
                         <td>
 
                             <?= htmlspecialchars(
-                                $user['no_telp'] ?? '-'
+                                $alat['deskripsi'] ?? '-'
                             ) ?>
 
                         </td>
+
 
                         <td>
 
                             <div class="action">
 
                                 <a
-                                    href="v_edit_user.php?id=<?= $user['id_user'] ?>"
+                                    href="v_edit_alat.php?id=<?= $alat['id_alat'] ?>"
                                     class="btn-edit">
 
                                     Edit
 
                                 </a>
 
+
                                 <a
-                                    href="../Controller/c_user.php?hapus=<?= $user['id_user'] ?>"
+                                    href="../Controller/c_alat.php?aksi=hapus&id=<?= $alat['id_alat'] ?>"
                                     class="btn-delete"
-                                    onclick="return confirm('Yakin ingin menghapus user ini?')">
+                                    onclick="return confirm('Yakin ingin menghapus alat ini?')">
 
                                     Hapus
 
@@ -844,9 +771,9 @@ tbody tr:last-child td{
 
                     <tr class="empty-row">
 
-                        <td colspan="6">
+                        <td colspan="9">
 
-                            Belum ada data user.
+                            Belum ada data alat.
 
                         </td>
 
@@ -866,6 +793,41 @@ tbody tr:last-child td{
 
 </div>
 
+
+<script>
+
+document.getElementById('search').addEventListener('keyup', function(){
+
+    let keyword = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll(
+        '#tabelAlat tbody tr'
+    );
+
+    rows.forEach(function(row){
+
+        let text = row.innerText.toLowerCase();
+
+        if(text.includes(keyword)){
+
+            row.style.display = '';
+
+        }else{
+
+            row.style.display = 'none';
+
+        }
+
+    });
+
+});
+
+</script>
+
 </body>
 
 </html>
+
+Yang penting, "v_alat.php" ini tidak melakukan INSERT/UPDATE/DELETE langsung. Dia hanya menampilkan data dan mengarahkan aksi ke "c_alat.php", sesuai pola MVC yang lu pakai.
+
+Kalau "v_user.php" lu punya desain/sidebar yang harus benar-benar sama persis, kirim "v_user.php"-nya. Nanti gue bisa bikin "v_alat.php" meniru struktur Data User 1:1, bukan bikin desain baru.

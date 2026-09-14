@@ -7,7 +7,7 @@ include_once __DIR__ . '/../Model/m_koneksi.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $koneksi = new koneksi();
-
+   
     $user = trim($_POST['username']);
     $pass = trim($_POST['password']);
 
@@ -42,15 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: ../View/v_homeadmin.php");
 
             } elseif ($data['role'] == 'petugas') {
-
                 header("Location: ../View/v_homepetugas.php");
-
             } elseif ($data['role'] == 'peminjam') {
-
                 header("Location: ../View/v_homepeminjam.php");
-
             } else {
-
                 echo "<script>
                         alert('Role tidak dikenali');
                         window.location='../View/v_login.php';

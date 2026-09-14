@@ -154,28 +154,13 @@ class m_user
         return $query;
     }
 
-    public function nonaktifkanUser($id)
+    public function hapusUser($id)
     {
         $id = (int)$id;
 
         $query = mysqli_query(
             $this->koneksi,
-            "UPDATE tb_user
-             SET status_aktif = 0
-             WHERE id_user = $id"
-        );
-
-        return $query;
-    }
-
-    public function aktifkanUser($id)
-    {
-        $id = (int)$id;
-
-        $query = mysqli_query(
-            $this->koneksi,
-            "UPDATE tb_user
-             SET status_aktif = 1
+            "DELETE FROM tb_user
              WHERE id_user = $id"
         );
 

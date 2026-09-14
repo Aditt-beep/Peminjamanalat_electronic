@@ -82,7 +82,6 @@
     font-weight:700;
   }
 
-  /* MAIN */
   main{
     flex:1;
     display:flex;

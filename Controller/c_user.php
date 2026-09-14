@@ -163,28 +163,29 @@ if (isset($_POST['edit_password'])) {
     exit;
 }
 
-if (isset($_GET['nonaktifkan'])) {
+if (isset($_GET['hapus'])) {
 
-    $id = $_GET['nonaktifkan'];
+    $id = $_GET['hapus'];
 
-    $hasil = $model->nonaktifkanUser($id);
+    $hasil = $model->hapusUser($id);
 
     if ($hasil) {
 
         echo "<script>
-                alert('User berhasil dinonaktifkan!');
+                alert('User berhasil dihapus!');
                 window.location='../View/v_user.php';
               </script>";
 
     } else {
 
         echo "<script>
-                alert('Gagal menonaktifkan user!');
+                alert('Gagal menghapus user!');
                 window.location='../View/v_user.php';
               </script>";
     }
 
     exit;
+
 }
 
 if (isset($_GET['aktifkan'])) {
