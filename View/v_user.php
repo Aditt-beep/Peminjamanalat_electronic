@@ -654,7 +654,7 @@ tbody tr:last-child td{
 
         <a
             class="logout-btn"
-            href="v_logout.php">
+            href="../Controller/c_logout.php">
 
             <svg
                 viewBox="0 0 24 24"

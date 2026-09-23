@@ -58,7 +58,7 @@ class m_user
             "INSERT INTO tb_user
             (
                 nama,
-                username,
+                username,    
                 password,
                 role,
                 no_telp,
@@ -70,6 +70,58 @@ class m_user
                 '$username',
                 '$password',
                 '$role',
+                '$no_telp',
+                1
+            )"
+        );
+
+        return $query;
+    }
+
+    public function registerUser(
+        $nama,
+        $username,
+        $password,
+        $no_telp
+    ) {
+
+        $password = password_hash(
+            $password,
+            PASSWORD_BCRYPT
+        );
+
+        $nama = mysqli_real_escape_string(
+            $this->koneksi,
+            $nama
+        );
+
+        $username = mysqli_real_escape_string(
+            $this->koneksi,
+            $username
+        );
+
+        $no_telp = mysqli_real_escape_string(
+            $this->koneksi,
+            $no_telp
+        );
+
+        $query = mysqli_query(
+            $this->koneksi,
+            "INSERT INTO tb_user
+            (
+                nama,
+                username,
+                password,
+                role,
+                no_telp,
+                status_aktif
+            )
+            VALUES
+            (
+                '$nama',
+                '$username',
+                '$password',
+                'peminjam',
                 '$no_telp',
                 1
             )"

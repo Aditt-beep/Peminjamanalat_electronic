@@ -1,12 +1,14 @@
 <?php
-
 include_once __DIR__ . '/../Model/m_koneksi.php';
 include_once __DIR__ . '/../Model/m_alat.php';
 
 $koneksi = new koneksi();
-$model = new m_alat($koneksi->koneksi);
 
-$dataAlat = $model->tampilAlat();
+$model = new m_alat(
+    $koneksi->koneksi
+);
+
+$dataAlat = $model->tampil_data();
 
 ?>
 
@@ -397,43 +399,13 @@ tbody tr:last-child td{
 
             <svg viewBox="0 0 24 24" fill="none">
 
-                <rect
-                    x="3"
-                    y="3"
-                    width="7"
-                    height="7"
-                    rx="1.5"
-                    fill="#fff"
-                />
+                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#fff"/>
 
-                <rect
-                    x="14"
-                    y="3"
-                    width="7"
-                    height="7"
-                    rx="1.5"
-                    fill="#fff"
-                    opacity="0.7"
-                />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#fff" opacity="0.7"/>
 
-                <rect
-                    x="3"
-                    y="14"
-                    width="7"
-                    height="7"
-                    rx="1.5"
-                    fill="#fff"
-                    opacity="0.7"
-                />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#fff" opacity="0.7"/>
 
-                <rect
-                    x="14"
-                    y="14"
-                    width="7"
-                    height="7"
-                    rx="1.5"
-                    fill="#fff"
-                />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff"/>
 
             </svg>
 
@@ -620,14 +592,18 @@ tbody tr:last-child td{
 
                 $no = 1;
 
-                if (
-                    $dataAlat &&
-                    mysqli_num_rows($dataAlat) > 0
-                ):
+                /*
+                 * $dataAlat berasal dari:
+                 * $model->tampil_data()
+                 *
+                 * Karena tampil_data() mengembalikan ARRAY,
+                 * maka gunakan foreach, bukan mysqli_num_rows()
+                 * dan mysqli_fetch_assoc().
+                 */
 
-                    while (
-                        $alat = mysqli_fetch_assoc($dataAlat)
-                    ):
+                if (!empty($dataAlat)):
+
+                    foreach ($dataAlat as $alat):
 
                 ?>
 
@@ -640,14 +616,14 @@ tbody tr:last-child td{
 
                         <td>
                             <?= htmlspecialchars(
-                                $alat['kode_alat']
+                                $alat['kode_alat'] ?? '-'
                             ) ?>
                         </td>
 
 
                         <td>
                             <?= htmlspecialchars(
-                                $alat['nama_alat']
+                                $alat['nama_alat'] ?? '-'
                             ) ?>
                         </td>
 
@@ -661,7 +637,7 @@ tbody tr:last-child td{
 
                         <td>
                             <?= htmlspecialchars(
-                                $alat['jumlah']
+                                $alat['jumlah'] ?? '-'
                             ) ?>
                         </td>
 
@@ -669,7 +645,7 @@ tbody tr:last-child td{
                         <td>
 
                             <?php if (
-                                $alat['kondisi'] == 'baik'
+                                ($alat['kondisi'] ?? '') == 'baik'
                             ): ?>
 
                                 <span class="badge badge-baik">
@@ -677,7 +653,7 @@ tbody tr:last-child td{
                                 </span>
 
                             <?php elseif (
-                                $alat['kondisi'] == 'rusak_ringan'
+                                ($alat['kondisi'] ?? '') == 'rusak_ringan'
                             ): ?>
 
                                 <span class="badge badge-ringan">
@@ -698,7 +674,7 @@ tbody tr:last-child td{
                         <td>
 
                             <?php if (
-                                $alat['status'] == 'tersedia'
+                                ($alat['status'] ?? '') == 'tersedia'
                             ): ?>
 
                                 <span class="badge badge-tersedia">
@@ -706,7 +682,7 @@ tbody tr:last-child td{
                                 </span>
 
                             <?php elseif (
-                                $alat['status'] == 'dipinjam'
+                                ($alat['status'] ?? '') == 'dipinjam'
                             ): ?>
 
                                 <span class="badge badge-dipinjam">
@@ -763,7 +739,7 @@ tbody tr:last-child td{
 
                 <?php
 
-                    endwhile;
+                    endforeach;
 
                 else:
 
@@ -827,7 +803,3 @@ document.getElementById('search').addEventListener('keyup', function(){
 </body>
 
 </html>
-
-Yang penting, "v_alat.php" ini tidak melakukan INSERT/UPDATE/DELETE langsung. Dia hanya menampilkan data dan mengarahkan aksi ke "c_alat.php", sesuai pola MVC yang lu pakai.
-
-Kalau "v_user.php" lu punya desain/sidebar yang harus benar-benar sama persis, kirim "v_user.php"-nya. Nanti gue bisa bikin "v_alat.php" meniru struktur Data User 1:1, bukan bikin desain baru.
