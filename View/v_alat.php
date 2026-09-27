@@ -1,4 +1,5 @@
 <?php
+
 include_once __DIR__ . '/../Model/m_koneksi.php';
 include_once __DIR__ . '/../Model/m_alat.php';
 
@@ -56,6 +57,11 @@ a{
     min-height:100vh;
 }
 
+
+/* =========================
+   SIDEBAR
+========================= */
+
 .sidebar{
     width:230px;
     background:var(--teal-deep);
@@ -82,6 +88,7 @@ a{
     display:flex;
     align-items:center;
     justify-content:center;
+    flex-shrink:0;
 }
 
 .brand .logo svg{
@@ -96,6 +103,7 @@ a{
 .brand-text .name{
     font-weight:800;
     font-size:16px;
+    color:#fff;
 }
 
 .brand-text .tag{
@@ -124,6 +132,7 @@ a{
     font-weight:600;
     color:#dce9e7;
     margin-bottom:2px;
+    transition:background .15s ease;
 }
 
 .nav-item:hover{
@@ -138,6 +147,12 @@ a{
 .nav-item svg{
     width:16px;
     height:16px;
+    flex-shrink:0;
+    opacity:.85;
+}
+
+.nav-item.active svg{
+    opacity:1;
 }
 
 .sidebar-footer{
@@ -202,6 +217,7 @@ a{
     color:#fff;
     font-size:13px;
     font-weight:700;
+    cursor:pointer;
 }
 
 .btn-add:hover{
@@ -231,6 +247,7 @@ a{
 .search-box{
     display:flex;
     align-items:center;
+    gap:8px;
     border:1px solid var(--card-border);
     background:#fff;
     border-radius:8px;
@@ -340,10 +357,19 @@ tbody tr:last-child td{
     color:var(--teal-deep);
 }
 
+.btn-edit:hover{
+    background:#d6e8e5;
+}
+
 .btn-delete{
     background:#fbe3e3;
     color:#a53939;
 }
+
+.btn-delete:hover{
+    background:#f5d1d1;
+}
+
 
 @media(max-width:700px){
 
@@ -385,11 +411,11 @@ tbody tr:last-child td{
 
 </head>
 
+
 <body>
 
-<div class="layout">
 
-<!-- SIDEBAR -->
+<div class="layout">
 
 <aside class="sidebar">
 
@@ -399,17 +425,48 @@ tbody tr:last-child td{
 
             <svg viewBox="0 0 24 24" fill="none">
 
-                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#fff"/>
+                <rect
+                    x="3"
+                    y="3"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                />
 
-                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#fff" opacity="0.7"/>
+                <rect
+                    x="14"
+                    y="3"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                    opacity="0.7"
+                />
 
-                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#fff" opacity="0.7"/>
+                <rect
+                    x="3"
+                    y="14"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                    opacity="0.7"
+                />
 
-                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff"/>
+                <rect
+                    x="14"
+                    y="14"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                />
 
             </svg>
 
         </div>
+
 
         <div class="brand-text">
 
@@ -430,54 +487,163 @@ tbody tr:last-child td{
         Menu Utama
     </div>
 
+    <a
+        class="nav-item"
+        href="v_homeadmin.php">
 
-    <a class="nav-item"
-       href="v_homeadmin.php">
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <rect
+                x="3"
+                y="3"
+                width="7"
+                height="9"
+                rx="1"/>
+
+            <rect
+                x="14"
+                y="3"
+                width="7"
+                height="5"
+                rx="1"/>
+
+            <rect
+                x="14"
+                y="12"
+                width="7"
+                height="9"
+                rx="1"/>
+
+            <rect
+                x="3"
+                y="16"
+                width="7"
+                height="5"
+                rx="1"/>
+
+        </svg>
 
         Dashboard
 
     </a>
 
-
     <div class="nav-group-label">
         Kelola Data
     </div>
 
+    <a
+        class="nav-item"
+        href="v_user.php">
 
-    <a class="nav-item"
-       href="v_user.php">
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <circle
+                cx="12"
+                cy="8"
+                r="4"/>
+
+            <path
+                d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+
+        </svg>
 
         Data User
 
     </a>
 
+    <a
+        class="nav-item active"
+        href="v_alat.php">
 
-    <a class="nav-item active"
-       href="v_alat.php">
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path
+                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+
+        </svg>
 
         Data Alat
 
     </a>
 
+    <a
+        class="nav-item"
+        href="v_kategori.php">
 
-    <a class="nav-item"
-       href="v_kategori.php">
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path
+                d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83l-1.42-1.42Z"/>
+
+            <circle
+                cx="7"
+                cy="7"
+                r="1"/>
+
+        </svg>
 
         Kategori
 
     </a>
 
+    <a
+        class="nav-item"
+        href="v_peminjaman.php">
 
-    <a class="nav-item"
-       href="v_peminjaman.php">
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path
+                d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+
+            <rect
+                x="9"
+                y="3"
+                width="6"
+                height="4"
+                rx="1"/>
+
+        </svg>
 
         Data Peminjaman
 
     </a>
 
+    <a
+        class="nav-item"
+        href="v_pengembalian.php">
 
-    <a class="nav-item"
-       href="v_pengembalian.php">
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path d="M3 7v6h6"/>
+
+            <path
+                d="M3 13a9 9 0 1 0 3-6.7L3 9"/>
+
+        </svg>
 
         Data Pengembalian
 
@@ -489,8 +655,24 @@ tbody tr:last-child td{
     </div>
 
 
-    <a class="nav-item"
-       href="v_log.php">
+    <a
+        class="nav-item"
+        href="v_log.php">
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path d="M12 8v4l3 3"/>
+
+            <circle
+                cx="12"
+                cy="12"
+                r="9"/>
+
+        </svg>
 
         Log Aktivitas
 
@@ -499,8 +681,26 @@ tbody tr:last-child td{
 
     <div class="sidebar-footer">
 
-        <a class="logout-btn"
-           href="v_logout.php">
+        <a
+            class="logout-btn"
+            href="../Controller/c_logout.php">
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+
+                <path
+                    d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+
+                <path
+                    d="M16 17l5-5-5-5"/>
+
+                <path
+                    d="M21 12H9"/>
+
+            </svg>
 
             Keluar
 
@@ -508,10 +708,9 @@ tbody tr:last-child td{
 
     </div>
 
+
 </aside>
 
-
-<!-- MAIN -->
 
 <main class="main">
 
@@ -543,6 +742,7 @@ tbody tr:last-child td{
 
     <div class="panel">
 
+
         <div class="panel-header">
 
             <h2 class="panel-title">
@@ -567,18 +767,27 @@ tbody tr:last-child td{
 
             <table id="tabelAlat">
 
+
                 <thead>
 
                     <tr>
 
                         <th>No</th>
+
                         <th>Kode</th>
+
                         <th>Nama Alat</th>
+
                         <th>Merk</th>
+
                         <th>Jumlah</th>
+
                         <th>Kondisi</th>
+
                         <th>Status</th>
+
                         <th>Deskripsi</th>
+
                         <th>Aksi</th>
 
                     </tr>
@@ -586,20 +795,13 @@ tbody tr:last-child td{
                 </thead>
 
 
+
                 <tbody>
+
 
                 <?php
 
                 $no = 1;
-
-                /*
-                 * $dataAlat berasal dari:
-                 * $model->tampil_data()
-                 *
-                 * Karena tampil_data() mengembalikan ARRAY,
-                 * maka gunakan foreach, bukan mysqli_num_rows()
-                 * dan mysqli_fetch_assoc().
-                 */
 
                 if (!empty($dataAlat)):
 
@@ -607,11 +809,15 @@ tbody tr:last-child td{
 
                 ?>
 
+
+
                     <tr>
+
 
                         <td>
                             <?= $no++ ?>
                         </td>
+
 
 
                         <td>
@@ -621,11 +827,13 @@ tbody tr:last-child td{
                         </td>
 
 
+
                         <td>
                             <?= htmlspecialchars(
                                 $alat['nama_alat'] ?? '-'
                             ) ?>
                         </td>
+
 
 
                         <td>
@@ -635,12 +843,16 @@ tbody tr:last-child td{
                         </td>
 
 
+
                         <td>
                             <?= htmlspecialchars(
                                 $alat['jumlah'] ?? '-'
                             ) ?>
                         </td>
 
+
+
+                        <!-- KONDISI -->
 
                         <td>
 
@@ -652,6 +864,7 @@ tbody tr:last-child td{
                                     Baik
                                 </span>
 
+
                             <?php elseif (
                                 ($alat['kondisi'] ?? '') == 'rusak_ringan'
                             ): ?>
@@ -659,6 +872,7 @@ tbody tr:last-child td{
                                 <span class="badge badge-ringan">
                                     Rusak Ringan
                                 </span>
+
 
                             <?php else: ?>
 
@@ -671,6 +885,9 @@ tbody tr:last-child td{
                         </td>
 
 
+
+                        <!-- STATUS -->
+
                         <td>
 
                             <?php if (
@@ -681,6 +898,7 @@ tbody tr:last-child td{
                                     Tersedia
                                 </span>
 
+
                             <?php elseif (
                                 ($alat['status'] ?? '') == 'dipinjam'
                             ): ?>
@@ -688,6 +906,7 @@ tbody tr:last-child td{
                                 <span class="badge badge-dipinjam">
                                     Dipinjam
                                 </span>
+
 
                             <?php else: ?>
 
@@ -700,6 +919,9 @@ tbody tr:last-child td{
                         </td>
 
 
+
+                        <!-- DESKRIPSI -->
+
                         <td>
 
                             <?= htmlspecialchars(
@@ -709,9 +931,13 @@ tbody tr:last-child td{
                         </td>
 
 
+
+                        <!-- AKSI -->
+
                         <td>
 
                             <div class="action">
+
 
                                 <a
                                     href="v_edit_alat.php?id=<?= $alat['id_alat'] ?>"
@@ -720,6 +946,7 @@ tbody tr:last-child td{
                                     Edit
 
                                 </a>
+
 
 
                                 <a
@@ -731,11 +958,15 @@ tbody tr:last-child td{
 
                                 </a>
 
+
                             </div>
 
                         </td>
 
+
                     </tr>
+
+
 
                 <?php
 
@@ -744,6 +975,7 @@ tbody tr:last-child td{
                 else:
 
                 ?>
+
 
                     <tr class="empty-row">
 
@@ -755,50 +987,66 @@ tbody tr:last-child td{
 
                     </tr>
 
+
                 <?php endif; ?>
 
+
                 </tbody>
+
 
             </table>
 
         </div>
 
+
     </div>
 
+
 </main>
+
 
 </div>
 
 
+
+<!-- =========================
+     SEARCH
+========================= -->
+
 <script>
 
-document.getElementById('search').addEventListener('keyup', function(){
+document
+    .getElementById('search')
+    .addEventListener('keyup', function(){
 
-    let keyword = this.value.toLowerCase();
+        let keyword = this.value.toLowerCase();
 
-    let rows = document.querySelectorAll(
-        '#tabelAlat tbody tr'
-    );
+        let rows = document.querySelectorAll(
+            '#tabelAlat tbody tr'
+        );
 
-    rows.forEach(function(row){
 
-        let text = row.innerText.toLowerCase();
+        rows.forEach(function(row){
 
-        if(text.includes(keyword)){
+            let text = row.innerText.toLowerCase();
 
-            row.style.display = '';
 
-        }else{
+            if(text.includes(keyword)){
 
-            row.style.display = 'none';
+                row.style.display = '';
 
-        }
+            }else{
+
+                row.style.display = 'none';
+
+            }
+
+        });
 
     });
 
-});
-
 </script>
+
 
 </body>
 

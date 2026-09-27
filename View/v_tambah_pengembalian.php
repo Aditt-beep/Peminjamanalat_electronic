@@ -13,7 +13,6 @@ if (
 ?>
 
 <!DOCTYPE html>
-
 <html lang="id">
 
 <head>
@@ -56,8 +55,6 @@ if (
         display:flex;
         min-height:100vh;
     }
-
-    /* SIDEBAR */
 
     .sidebar{
         width:230px;
@@ -138,6 +135,17 @@ if (
         color:#fff;
     }
 
+    .nav-item svg{
+        width:16px;
+        height:16px;
+        flex-shrink:0;
+        opacity:.85;
+    }
+
+    .nav-item.active svg{
+        opacity:1;
+    }
+
     .sidebar-footer{
         margin-top:auto;
         padding-top:16px;
@@ -159,7 +167,10 @@ if (
         background:rgba(255,255,255,0.08);
     }
 
-    /* MAIN */
+    .logout-btn svg{
+        width:16px;
+        height:16px;
+    }
 
     .main{
         flex:1;
@@ -245,6 +256,9 @@ if (
 
     .btn-save,
     .btn-cancel{
+        display:flex;
+        align-items:center;
+        gap:7px;
         border:none;
         border-radius:8px;
         padding:10px 16px;
@@ -270,6 +284,13 @@ if (
 
     .btn-cancel:hover{
         background:#d8d3c7;
+    }
+
+    .btn-save svg,
+    .btn-cancel svg{
+        width:15px;
+        height:15px;
+        flex-shrink:0;
     }
 
     @media(max-width:700px){
@@ -313,13 +334,12 @@ if (
     }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="layout">
-
-<!-- SIDEBAR -->
 
 <aside class="sidebar">
 
@@ -385,7 +405,6 @@ if (
 
     </div>
 
-
     <div class="nav-group-label">
         Menu Utama
     </div>
@@ -394,7 +413,21 @@ if (
         class="nav-item"
         href="v_homeadmin.php"
     >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+        </svg>
+
         Dashboard
+
     </a>
 
 
@@ -402,53 +435,128 @@ if (
         Kelola Data
     </div>
 
+
     <a
         class="nav-item"
         href="v_user.php"
     >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+        </svg>
+
         Data User
+
     </a>
+
 
     <a
         class="nav-item"
         href="v_alat.php"
     >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+
         Data Alat
+
     </a>
+
 
     <a
         class="nav-item"
         href="v_kategori.php"
     >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83-2.83Z"/>
+            <circle cx="7" cy="7" r="1"/>
+        </svg>
+
         Kategori
+
     </a>
+
 
     <a
         class="nav-item"
         href="v_peminjaman.php"
     >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+            <rect x="9" y="3" width="6" height="4" rx="1"/>
+        </svg>
+
         Data Peminjaman
+
     </a>
+
 
     <a
         class="nav-item active"
         href="v_pengembalian.php"
     >
-        Data Pengembalian
-    </a>
 
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M3 7v6h6"/>
+            <path d="M3 13a9 9 0 1 0 3-6.7L3 9"/>
+        </svg>
+
+        Data Pengembalian
+
+    </a>
 
     <div class="nav-group-label">
         Lainnya
     </div>
 
+
     <a
         class="nav-item"
         href="v_log.php"
     >
-        Log Aktivitas
-    </a>
 
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M12 8v4l3 3"/>
+            <circle cx="12" cy="12" r="9"/>
+        </svg>
+
+        Log Aktivitas
+
+    </a>
 
     <div class="sidebar-footer">
 
@@ -456,7 +564,20 @@ if (
             class="logout-btn"
             href="v_logout.php"
         >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <path d="M16 17l5-5-5-5"/>
+                <path d="M21 12H9"/>
+            </svg>
+
             Keluar
+
         </a>
 
     </div>
@@ -511,7 +632,6 @@ if (
 
             </div>
 
-
             <div class="form-group">
 
                 <label for="tanggal_pengembalian">
@@ -526,7 +646,6 @@ if (
                 >
 
             </div>
-
 
             <div class="form-group">
 
@@ -561,7 +680,6 @@ if (
             </div>
 
 
-
             <div class="form-action">
 
                 <button
@@ -569,7 +687,20 @@ if (
                     name="tambah"
                     class="btn-save"
                 >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+
                     Simpan Pengembalian
+
                 </button>
 
 
@@ -577,7 +708,19 @@ if (
                     href="v_pengembalian.php"
                     class="btn-cancel"
                 >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M19 12H5"/>
+                        <path d="M12 19l-7-7 7-7"/>
+                    </svg>
+
                     Kembali
+
                 </a>
 
             </div>
@@ -587,7 +730,6 @@ if (
     </div>
 
 </main>
-```
 
 </div>
 

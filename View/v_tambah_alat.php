@@ -56,8 +56,6 @@ if (
             min-height:100vh;
         }
 
-        /* SIDEBAR */
-
         .sidebar{
             width:230px;
             background:var(--teal-deep);
@@ -84,6 +82,7 @@ if (
             display:flex;
             align-items:center;
             justify-content:center;
+            flex-shrink:0;
         }
 
         .brand .logo svg{
@@ -98,6 +97,7 @@ if (
         .brand-text .name{
             font-weight:800;
             font-size:16px;
+            color:#fff;
         }
 
         .brand-text .tag{
@@ -126,6 +126,7 @@ if (
             font-weight:600;
             color:#dce9e7;
             margin-bottom:2px;
+            transition:background .15s ease;
         }
 
         .nav-item:hover{
@@ -135,6 +136,17 @@ if (
         .nav-item.active{
             background:var(--teal);
             color:#fff;
+        }
+
+        .nav-item svg{
+            width:16px;
+            height:16px;
+            flex-shrink:0;
+            opacity:.85;
+        }
+
+        .nav-item.active svg{
+            opacity:1;
         }
 
         .sidebar-footer{
@@ -158,7 +170,10 @@ if (
             background:rgba(255,255,255,0.08);
         }
 
-        /* MAIN */
+        .logout-btn svg{
+            width:16px;
+            height:16px;
+        }
 
         .main{
             flex:1;
@@ -198,6 +213,7 @@ if (
             font-size:15px;
             font-weight:800;
         }
+
 
         .form-group{
             margin-bottom:18px;
@@ -320,11 +336,11 @@ if (
 
 </head>
 
+
 <body>
 
-<div class="layout">
 
-    <!-- SIDEBAR -->
+<div class="layout">
 
     <aside class="sidebar">
 
@@ -376,6 +392,7 @@ if (
 
             </div>
 
+
             <div class="brand-text">
 
                 <div class="name">
@@ -395,14 +412,55 @@ if (
             Menu Utama
         </div>
 
-
         <a
             class="nav-item"
             href="v_homeadmin.php"
         >
-            Dashboard
-        </a>
 
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <rect
+                    x="3"
+                    y="3"
+                    width="7"
+                    height="9"
+                    rx="1"
+                />
+
+                <rect
+                    x="14"
+                    y="3"
+                    width="7"
+                    height="5"
+                    rx="1"
+                />
+
+                <rect
+                    x="14"
+                    y="12"
+                    width="7"
+                    height="9"
+                    rx="1"
+                />
+
+                <rect
+                    x="3"
+                    y="16"
+                    width="7"
+                    height="5"
+                    rx="1"
+                />
+
+            </svg>
+
+            Dashboard
+
+        </a>
 
         <div class="nav-group-label">
             Kelola Data
@@ -413,15 +471,50 @@ if (
             class="nav-item"
             href="v_user.php"
         >
-            Data User
-        </a>
 
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <circle
+                    cx="12"
+                    cy="8"
+                    r="4"
+                />
+
+                <path
+                    d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"
+                />
+
+            </svg>
+
+            Data User
+
+        </a>
 
         <a
             class="nav-item active"
             href="v_alat.php"
         >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <path
+                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+                />
+
+            </svg>
+
             Data Alat
+
         </a>
 
 
@@ -429,23 +522,84 @@ if (
             class="nav-item"
             href="v_kategori.php"
         >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <path
+                    d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83l-1.42-1.42Z"
+                />
+
+                <circle
+                    cx="7"
+                    cy="7"
+                    r="1"
+                />
+
+            </svg>
+
             Kategori
+
         </a>
+
 
 
         <a
             class="nav-item"
             href="v_peminjaman.php"
         >
-            Data Peminjaman
-        </a>
 
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <path
+                    d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
+                />
+
+                <rect
+                    x="9"
+                    y="3"
+                    width="6"
+                    height="4"
+                    rx="1"
+                />
+
+            </svg>
+
+            Data Peminjaman
+
+        </a>
 
         <a
             class="nav-item"
             href="v_pengembalian.php"
         >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <path d="M3 7v6h6"/>
+
+                <path
+                    d="M3 13a9 9 0 1 0 3-6.7L3 9"
+                />
+
+            </svg>
+
             Data Pengembalian
+
         </a>
 
 
@@ -458,25 +612,68 @@ if (
             class="nav-item"
             href="v_log.php"
         >
-            Log Aktivitas
-        </a>
 
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <path d="M12 8v4l3 3"/>
+
+                <circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                />
+
+            </svg>
+
+            Log Aktivitas
+
+        </a>
 
         <div class="sidebar-footer">
 
             <a
                 class="logout-btn"
-                href="v_logout.php"
+                href="../Controller/c_logout.php"
             >
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+
+                    <path
+                        d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                    />
+
+                    <path
+                        d="M16 17l5-5-5-5"
+                    />
+
+                    <path
+                        d="M21 12H9"
+                    />
+
+                </svg>
+
                 Keluar
+
             </a>
 
         </div>
+
 
     </aside>
 
 
     <main class="main">
+
 
         <div class="topbar">
 
@@ -494,7 +691,6 @@ if (
 
         </div>
 
-
         <div class="panel">
 
             <h2 class="panel-title">
@@ -508,6 +704,7 @@ if (
             >
 
                 <div class="form-row">
+
 
                     <div class="form-group">
 
@@ -542,10 +739,11 @@ if (
 
                     </div>
 
+
                 </div>
 
-
                 <div class="form-row">
+
 
                     <div class="form-group">
 
@@ -580,10 +778,11 @@ if (
 
                     </div>
 
+
                 </div>
 
-
                 <div class="form-row">
+
 
                     <div class="form-group">
 
@@ -650,8 +849,8 @@ if (
 
                     </div>
 
-                </div>
 
+                </div>
 
                 <div class="form-group">
 
@@ -667,15 +866,17 @@ if (
 
                 </div>
 
-
                 <div class="form-action">
+
 
                     <button
                         type="submit"
                         name="tambah"
                         class="btn-save"
                     >
+
                         Simpan Alat
+
                     </button>
 
 
@@ -683,18 +884,26 @@ if (
                         href="v_alat.php"
                         class="btn-cancel"
                     >
+
                         Kembali
+
                     </a>
+
 
                 </div>
 
+
             </form>
+
 
         </div>
 
+
     </main>
 
+
 </div>
+
 
 </body>
 

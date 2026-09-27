@@ -3,6 +3,8 @@
 include_once __DIR__ . '/../Model/m_koneksi.php';
 include_once __DIR__ . '/../Model/m_peminjaman.php';
 
+$koneksi = new koneksi();
+
 $model = new m_peminjaman();
 
 $dataPeminjaman = $model->tampil_data();
@@ -14,355 +16,396 @@ $dataPeminjaman = $model->tampil_data();
 
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>pinjam.in — Data Peminjaman</title>
+<title>pinjam.in — Data Peminjaman</title>
 
-    <style>
+<style>
 
-        :root {
-            --cream: #f4f1ea;
-            --cream-deep: #efebe1;
-            --teal-dark: #0f6b64;
-            --teal: #1a7a72;
-            --teal-deep: #0a4a45;
-            --ink: #1c2b29;
-            --muted: #7d8a87;
-            --card-border: #e4e0d6;
-        }
+:root{
+    --cream:#f4f1ea;
+    --cream-deep:#efebe1;
+    --teal-dark:#0f6b64;
+    --teal:#1a7a72;
+    --teal-deep:#0a4a45;
+    --ink:#1c2b29;
+    --muted:#7d8a87;
+    --card-border:#e4e0d6;
+}
 
-        * {
-            box-sizing: border-box;
-        }
+*{
+    box-sizing:border-box;
+}
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--cream-deep);
-            color: var(--ink);
-        }
+body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--cream-deep);
+    color:var(--ink);
+}
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+a{
+    color:inherit;
+    text-decoration:none;
+}
 
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
+.layout{
+    display:flex;
+    min-height:100vh;
+}
 
-        /* SIDEBAR */
+.sidebar{
+    width:230px;
+    background:var(--teal-deep);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    padding:22px 16px;
+    flex-shrink:0;
+}
 
-        .sidebar {
-            width: 230px;
-            background: var(--teal-deep);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            padding: 22px 16px;
-            flex-shrink: 0;
-        }
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:32px;
+    padding:0 6px;
+}
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 32px;
-            padding: 0 6px;
-        }
+.brand .logo{
+    width:34px;
+    height:34px;
+    border-radius:8px;
+    background:var(--teal);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
 
-        .brand .logo {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            background: var(--teal);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.brand .logo svg{
+    width:18px;
+    height:18px;
+}
 
-        .brand .logo svg {
-            width: 18px;
-            height: 18px;
-        }
+.brand-text{
+    line-height:1.1;
+}
 
-        .brand-text {
-            line-height: 1.1;
-        }
+.brand-text .name{
+    font-weight:800;
+    font-size:16px;
+    color:#fff;
+}
 
-        .brand-text .name {
-            font-weight: 800;
-            font-size: 16px;
-        }
+.brand-text .tag{
+    font-size:9px;
+    letter-spacing:1px;
+    color:#8fc9c2;
+    font-weight:700;
+}
 
-        .brand-text .tag {
-            font-size: 9px;
-            letter-spacing: 1px;
-            color: #8fc9c2;
-            font-weight: 700;
-        }
+.nav-group-label{
+    font-size:10.5px;
+    letter-spacing:.8px;
+    color:#7fa7a1;
+    font-weight:700;
+    margin:18px 10px 8px;
+    text-transform:uppercase;
+}
 
-        .nav-group-label {
-            font-size: 10.5px;
-            letter-spacing: .8px;
-            color: #7fa7a1;
-            font-weight: 700;
-            margin: 18px 10px 8px;
-            text-transform: uppercase;
-        }
+.nav-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:13.5px;
+    font-weight:600;
+    color:#dce9e7;
+    margin-bottom:2px;
+    transition:background .15s ease;
+}
 
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-size: 13.5px;
-            font-weight: 600;
-            color: #dce9e7;
-            margin-bottom: 2px;
-        }
+.nav-item:hover{
+    background:rgba(255,255,255,0.08);
+}
 
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
+.nav-item.active{
+    background:var(--teal);
+    color:#fff;
+}
 
-        .nav-item.active {
-            background: var(--teal);
-            color: #fff;
-        }
+.nav-item svg{
+    width:16px;
+    height:16px;
+    flex-shrink:0;
+    opacity:.85;
+}
 
-        .sidebar-footer {
-            margin-top: auto;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-        }
+.nav-item.active svg{
+    opacity:1;
+}
 
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-size: 13.5px;
-            font-weight: 700;
-            color: #f3c9c9;
-        }
+.sidebar-footer{
+    margin-top:auto;
+    padding-top:16px;
+    border-top:1px solid rgba(255,255,255,0.12);
+}
 
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
+.logout-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:13.5px;
+    font-weight:700;
+    color:#f3c9c9;
+}
 
-        /* MAIN */
+.logout-btn:hover{
+    background:rgba(255,255,255,0.08);
+}
 
-        .main {
-            flex: 1;
-            padding: 32px 40px;
-            max-width: 1200px;
-        }
+.logout-btn svg{
+    width:16px;
+    height:16px;
+}
 
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 28px;
-        }
+.main{
+    flex:1;
+    padding:32px 40px;
+    max-width:1200px;
+}
 
-        .topbar h1 {
-            font-size: 23px;
-            font-weight: 800;
-            margin: 0 0 4px;
-        }
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:28px;
+}
 
-        .topbar p {
-            margin: 0;
-            font-size: 13px;
-            color: var(--muted);
-        }
+.topbar h1{
+    font-size:23px;
+    font-weight:800;
+    margin:0 0 4px;
+}
 
-        .btn-add {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            background: var(--teal-dark);
-            color: #fff;
-            font-size: 13px;
-            font-weight: 700;
-        }
+.topbar p{
+    margin:0;
+    font-size:13px;
+    color:var(--muted);
+}
 
-        .btn-add:hover {
-            background: var(--teal-deep);
-        }
 
-        .panel {
-            background: var(--cream);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 22px;
-        }
+.btn-add{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    border:none;
+    border-radius:8px;
+    padding:10px 15px;
+    background:var(--teal-dark);
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+}
 
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
-        }
+.btn-add:hover{
+    background:var(--teal-deep);
+}
 
-        .panel-title {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 800;
-        }
+.btn-add svg{
+    width:15px;
+    height:15px;
+}
 
-        .search-box {
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--card-border);
-            background: #fff;
-            border-radius: 8px;
-            padding: 9px 12px;
-            width: 250px;
-        }
 
-        .search-box input {
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 13px;
-        }
+.panel{
+    background:var(--cream);
+    border:1px solid var(--card-border);
+    border-radius:14px;
+    padding:22px;
+}
 
-        .table-wrapper {
-            overflow-x: auto;
-        }
+.panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+.panel-title{
+    margin:0;
+    font-size:15px;
+    font-weight:800;
+}
 
-        thead th {
-            text-align: left;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-            color: var(--muted);
-            font-weight: 700;
-            padding: 0 10px 10px;
-            border-bottom: 1px solid var(--card-border);
-            white-space: nowrap;
-        }
 
-        tbody td {
-            padding: 13px 10px;
-            font-size: 13px;
-            border-bottom: 1px solid var(--card-border);
-        }
+.search-box{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid var(--card-border);
+    background:#fff;
+    border-radius:8px;
+    padding:9px 12px;
+    width:250px;
+}
 
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
+.search-box svg{
+    width:15px;
+    height:15px;
+    color:var(--muted);
+    flex-shrink:0;
+}
 
-        .empty-row td {
-            text-align: center;
-            color: var(--muted);
-            padding: 30px 10px;
-        }
+.search-box input{
+    border:none;
+    outline:none;
+    width:100%;
+    font-size:13px;
+}
 
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 700;
-        }
+.table-wrapper{
+    overflow-x:auto;
+}
 
-        .badge-menunggu {
-            background: #fdecd2;
-            color: #8a5a10;
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+}
 
-        .badge-disetujui {
-            background: #d9efe9;
-            color: #0f6b64;
-        }
+thead th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:var(--muted);
+    font-weight:700;
+    padding:0 10px 10px;
+    border-bottom:1px solid var(--card-border);
+    white-space:nowrap;
+}
 
-        .badge-ditolak {
-            background: #fbdede;
-            color: #a53939;
-        }
+tbody td{
+    padding:13px 10px;
+    font-size:13px;
+    border-bottom:1px solid var(--card-border);
+}
 
-        .badge-selesai {
-            background: #e4e0e6;
-            color: #5b5363;
-        }
+tbody tr:last-child td{
+    border-bottom:none;
+}
 
-        .action {
-            display: flex;
-            gap: 6px;
-        }
+.empty-row td{
+    text-align:center;
+    color:var(--muted);
+    padding:30px 10px;
+}
 
-        .btn-edit,
-        .btn-delete {
-            border: none;
-            border-radius: 7px;
-            padding: 7px 10px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+.badge{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+}
 
-        .btn-edit {
-            background: #e4efed;
-            color: var(--teal-deep);
-        }
+.badge-menunggu{
+    background:#fdecd2;
+    color:#8a5a10;
+}
 
-        .btn-delete {
-            background: #fbe3e3;
-            color: #a53939;
-        }
+.badge-disetujui{
+    background:#d9efe9;
+    color:#0f6b64;
+}
 
-        @media (max-width: 700px) {
+.badge-ditolak{
+    background:#fbdede;
+    color:#a53939;
+}
 
-            .layout {
-                flex-direction: column;
-            }
+.badge-selesai{
+    background:#e4e0e6;
+    color:#5b5363;
+}
 
-            .sidebar {
-                width: 100%;
-                flex-direction: row;
-                overflow-x: auto;
-                align-items: center;
-            }
+.action{
+    display:flex;
+    gap:6px;
+}
 
-            .nav-group-label {
-                display: none;
-            }
+.btn-edit,
+.btn-delete{
+    border:none;
+    border-radius:7px;
+    padding:7px 10px;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+}
 
-            .sidebar-footer {
-                margin-top: 0;
-                margin-left: auto;
-                border-top: none;
-                padding-top: 0;
-            }
+.btn-edit{
+    background:#e4efed;
+    color:var(--teal-deep);
+}
 
-            .main {
-                padding: 20px;
-            }
+.btn-edit:hover{
+    background:#d6e8e5;
+}
 
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
+.btn-delete{
+    background:#fbe3e3;
+    color:#a53939;
+}
 
-        }
+.btn-delete:hover{
+    background:#f5d1d1;
+}
 
-    </style>
+
+@media(max-width:700px){
+
+    .layout{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        flex-direction:row;
+        overflow-x:auto;
+        align-items:center;
+    }
+
+    .nav-group-label{
+        display:none;
+    }
+
+    .sidebar-footer{
+        margin-top:0;
+        margin-left:auto;
+        border-top:none;
+        padding-top:0;
+    }
+
+    .main{
+        padding:20px;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -370,404 +413,658 @@ $dataPeminjaman = $model->tampil_data();
 
 <div class="layout">
 
-    <!-- SIDEBAR -->
+<aside class="sidebar">
 
-    <aside class="sidebar">
+    <div class="brand">
 
-        <div class="brand">
+        <div class="logo">
 
-            <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none">
 
-                <svg viewBox="0 0 24 24" fill="none">
+                <rect
+                    x="3"
+                    y="3"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                />
 
-                    <rect
-                        x="3"
-                        y="3"
-                        width="7"
-                        height="7"
-                        rx="1.5"
-                        fill="#fff"
+                <rect
+                    x="14"
+                    y="3"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                    opacity="0.7"
+                />
+
+                <rect
+                    x="3"
+                    y="14"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                    opacity="0.7"
+                />
+
+                <rect
+                    x="14"
+                    y="14"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                />
+
+            </svg>
+
+        </div>
+
+
+        <div class="brand-text">
+
+            <div class="name">
+                pinjam.in
+            </div>
+
+            <div class="tag">
+                ADMIN PANEL
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="nav-group-label">
+        Menu Utama
+    </div>
+
+
+    <a
+        class="nav-item"
+        href="v_homeadmin.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+
+            <rect
+                x="3"
+                y="3"
+                width="7"
+                height="9"
+                rx="1"
+            />
+
+            <rect
+                x="14"
+                y="3"
+                width="7"
+                height="5"
+                rx="1"
+            />
+
+            <rect
+                x="14"
+                y="12"
+                width="7"
+                height="9"
+                rx="1"
+            />
+
+            <rect
+                x="3"
+                y="16"
+                width="7"
+                height="5"
+                rx="1"
+            />
+
+        </svg>
+
+        Dashboard
+
+    </a>
+
+
+    <!-- KELOLA DATA -->
+
+    <div class="nav-group-label">
+        Kelola Data
+    </div>
+
+
+    <a
+        class="nav-item"
+        href="v_user.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+
+            <circle
+                cx="12"
+                cy="8"
+                r="4"
+            />
+
+            <path
+                d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"
+            />
+
+        </svg>
+
+        Data User
+
+    </a>
+
+
+    <a
+        class="nav-item"
+        href="v_alat.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+
+            <path
+                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+            />
+
+        </svg>
+
+        Data Alat
+
+    </a>
+
+    <a
+        class="nav-item"
+        href="v_kategori.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+
+            <path
+                d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83-2.83-2.83Z"
+            />
+
+            <circle
+                cx="7"
+                cy="7"
+                r="1"
+            />
+
+        </svg>
+
+        Kategori
+
+    </a>
+
+    <a
+        class="nav-item active"
+        href="v_peminjaman.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+
+            <path
+                d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
+            />
+
+            <rect
+                x="9"
+                y="3"
+                width="6"
+                height="4"
+                rx="1"
+            />
+
+        </svg>
+
+        Data Peminjaman
+
+    </a>
+
+    <a
+        class="nav-item"
+        href="v_pengembalian.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+
+            <path
+                d="M3 7v6h6"
+            />
+
+            <path
+                d="M3 13a9 9 0 1 0 3-6.7L3 9"
+            />
+
+        </svg>
+
+        Data Pengembalian
+
+    </a>
+
+    <div class="nav-group-label">
+        Lainnya
+    </div>
+
+    <a
+        class="nav-item"
+        href="v_log.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+
+            <path
+                d="M12 8v4l3 3"
+            />
+
+            <circle
+                cx="12"
+                cy="12"
+                r="9"
+            />
+
+        </svg>
+
+        Log Aktivitas
+
+    </a>
+
+    <div class="sidebar-footer">
+
+        <a
+            class="logout-btn"
+            href="v_logout.php"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <path
+                    d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                />
+
+                <path
+                    d="M16 17l5-5-5-5"
+                />
+
+                <path
+                    d="M21 12H9"
+                />
+
+            </svg>
+
+            Keluar
+
+        </a>
+
+    </div>
+
+
+</aside>
+
+<main class="main">
+
+
+    <div class="topbar">
+
+        <div>
+
+            <h1>
+                Data Peminjaman
+            </h1>
+
+            <p>
+                Kelola data peminjaman alat.
+            </p>
+
+        </div>
+
+
+        <a
+            href="v_tambah_peminjaman.php"
+            class="btn-add"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <path d="M12 5v14"/>
+
+                <path d="M5 12h14"/>
+
+            </svg>
+
+            Tambah Peminjaman
+
+        </a>
+
+    </div>
+
+
+    <div class="panel">
+
+
+        <div class="panel-header">
+
+            <h2 class="panel-title">
+                Daftar Peminjaman
+            </h2>
+
+
+            <div class="search-box">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
                     />
 
-                    <rect
-                        x="14"
-                        y="3"
-                        width="7"
-                        height="7"
-                        rx="1.5"
-                        fill="#fff"
-                        opacity="0.7"
-                    />
-
-                    <rect
-                        x="3"
-                        y="14"
-                        width="7"
-                        height="7"
-                        rx="1.5"
-                        fill="#fff"
-                        opacity="0.7"
-                    />
-
-                    <rect
-                        x="14"
-                        y="14"
-                        width="7"
-                        height="7"
-                        rx="1.5"
-                        fill="#fff"
+                    <path
+                        d="m20 20-4-4"
                     />
 
                 </svg>
 
-            </div>
 
-            <div class="brand-text">
-
-                <div class="name">
-                    pinjam.in
-                </div>
-
-                <div class="tag">
-                    ADMIN PANEL
-                </div>
+                <input
+                    type="text"
+                    id="search"
+                    placeholder="Cari peminjaman..."
+                >
 
             </div>
 
         </div>
 
 
-        <div class="nav-group-label">
-            Menu Utama
+        <div class="table-wrapper">
+
+
+            <table id="tabelPeminjaman">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>No</th>
+
+                        <th>ID Peminjaman</th>
+
+                        <th>Tanggal Pengajuan</th>
+
+                        <th>Tanggal Peminjaman</th>
+
+                        <th>Tanggal Kembali</th>
+
+                        <th>Status</th>
+
+                        <th>Aksi</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                <?php
+
+                $no = 1;
+
+                if (!empty($dataPeminjaman)):
+
+                    foreach ($dataPeminjaman as $peminjaman):
+
+                ?>
+
+
+                    <tr>
+
+
+                        <td>
+                            <?= $no++ ?>
+                        </td>
+
+
+                        <td>
+                            <?= htmlspecialchars(
+                                $peminjaman['id_peminjaman'] ?? '-'
+                            ) ?>
+                        </td>
+
+
+                        <td>
+                            <?= htmlspecialchars(
+                                $peminjaman['tanggal_pengajuan'] ?? '-'
+                            ) ?>
+                        </td>
+
+
+                        <td>
+                            <?= htmlspecialchars(
+                                $peminjaman['tanggal_peminjaman'] ?? '-'
+                            ) ?>
+                        </td>
+
+
+                        <td>
+                            <?= htmlspecialchars(
+                                $peminjaman['tanggal_kembali_rencana'] ?? '-'
+                            ) ?>
+                        </td>
+
+
+                        <td>
+
+
+                            <?php
+
+                            $status = $peminjaman['status'] ?? '';
+
+                            if ($status == 'menunggu'):
+
+                            ?>
+
+                                <span class="badge badge-menunggu">
+                                    Menunggu
+                                </span>
+
+
+                            <?php elseif ($status == 'disetujui'): ?>
+
+
+                                <span class="badge badge-disetujui">
+                                    Disetujui
+                                </span>
+
+
+                            <?php elseif ($status == 'ditolak'): ?>
+
+
+                                <span class="badge badge-ditolak">
+                                    Ditolak
+                                </span>
+
+
+                            <?php elseif ($status == 'selesai'): ?>
+
+
+                                <span class="badge badge-selesai">
+                                    Selesai
+                                </span>
+
+
+                            <?php else: ?>
+
+
+                                <span class="badge">
+                                    <?= htmlspecialchars(
+                                        $status ?: '-'
+                                    ) ?>
+                                </span>
+
+
+                            <?php endif; ?>
+
+
+                        </td>
+
+
+                        <td>
+
+
+                            <div class="action">
+
+
+                                <a
+                                    href="v_edit_peminjaman.php?id=<?= $peminjaman['id_peminjaman'] ?>"
+                                    class="btn-edit"
+                                >
+                                    Edit
+                                </a>
+
+
+                                <a
+                                    href="../Controller/c_peminjaman.php?aksi=hapus&id=<?= $peminjaman['id_peminjaman'] ?>"
+                                    class="btn-delete"
+                                    onclick="return confirm('Yakin ingin menghapus data peminjaman ini?')"
+                                >
+                                    Hapus
+                                </a>
+
+
+                            </div>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                <?php
+
+                    endforeach;
+
+                else:
+
+                ?>
+
+
+                    <tr class="empty-row">
+
+                        <td colspan="7">
+                            Belum ada data peminjaman.
+                        </td>
+
+                    </tr>
+
+
+                <?php endif; ?>
+
+
+                </tbody>
+
+
+            </table>
+
+
         </div>
 
 
-        <a
-            class="nav-item"
-            href="v_homeadmin.php"
-        >
-            Dashboard
-        </a>
+    </div>
 
 
-        <div class="nav-group-label">
-            Kelola Data
-        </div>
+</main>
 
-
-        <a
-            class="nav-item"
-            href="v_user.php"
-        >
-            Data User
-        </a>
-
-
-        <a
-            class="nav-item"
-            href="v_alat.php"
-        >
-            Data Alat
-        </a>
-
-
-        <a
-            class="nav-item"
-            href="v_kategori.php"
-        >
-            Kategori
-        </a>
-
-
-        <a
-            class="nav-item active"
-            href="v_peminjaman.php"
-        >
-            Data Peminjaman
-        </a>
-
-
-        <a
-            class="nav-item"
-            href="v_pengembalian.php"
-        >
-            Data Pengembalian
-        </a>
-
-
-        <div class="nav-group-label">
-            Lainnya
-        </div>
-
-
-        <a
-            class="nav-item"
-            href="v_log.php"
-        >
-            Log Aktivitas
-        </a>
-
-
-        <div class="sidebar-footer">
-
-            <a
-                class="logout-btn"
-                href="v_logout.php"
-            >
-                Keluar
-            </a>
-
-        </div>
-
-    </aside>
-
-
-    <main class="main">
-
-        <div class="topbar">
-
-            <div>
-
-                <h1>
-                    Data Peminjaman
-                </h1>
-
-                <p>
-                    Kelola data peminjaman alat.
-                </p>
-
-            </div>
-
-
-            <a
-                href="v_tambah_peminjaman.php"
-                class="btn-add"
-            >
-                + Tambah Peminjaman
-            </a>
-
-        </div>
-
-
-        <div class="panel">
-
-            <div class="panel-header">
-
-                <h2 class="panel-title">
-                    Daftar Peminjaman
-                </h2>
-
-
-                <div class="search-box">
-
-                    <input
-                        type="text"
-                        id="search"
-                        placeholder="Cari peminjaman..."
-                    >
-
-                </div>
-
-            </div>
-
-
-            <div class="table-wrapper">
-
-                <table id="tabelPeminjaman">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>No</th>
-                            <th>ID Peminjaman</th>
-                            <th>Tanggal Pengajuan</th>
-                            <th>Tanggal Peminjaman</th>
-                            <th>Tanggal Kembali</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                    <?php
-
-                    $no = 1;
-
-                    if (!empty($dataPeminjaman)):
-
-                        foreach ($dataPeminjaman as $peminjaman):
-
-                    ?>
-
-                        <tr>
-
-                            <td>
-                                <?= $no++ ?>
-                            </td>
-
-
-                            <td>
-                                <?= htmlspecialchars(
-                                    $peminjaman['id_peminjaman'] ?? '-'
-                                ) ?>
-                            </td>
-
-
-                            <td>
-                                <?= htmlspecialchars(
-                                    $peminjaman['tanggal_pengajuan'] ?? '-'
-                                ) ?>
-                            </td>
-
-
-                            <td>
-                                <?= htmlspecialchars(
-                                    $peminjaman['tanggal_peminjaman'] ?? '-'
-                                ) ?>
-                            </td>
-
-
-                            <td>
-                                <?= htmlspecialchars(
-                                    $peminjaman['tanggal_kembali_rencana'] ?? '-'
-                                ) ?>
-                            </td>
-
-
-                            <td>
-
-                                <?php
-
-                                $status = $peminjaman['status'] ?? '';
-
-                                if ($status == 'menunggu'):
-
-                                ?>
-
-                                    <span class="badge badge-menunggu">
-                                        Menunggu
-                                    </span>
-
-                                <?php elseif ($status == 'disetujui'): ?>
-
-                                    <span class="badge badge-disetujui">
-                                        Disetujui
-                                    </span>
-
-                                <?php elseif ($status == 'ditolak'): ?>
-
-                                    <span class="badge badge-ditolak">
-                                        Ditolak
-                                    </span>
-
-                                <?php elseif ($status == 'selesai'): ?>
-
-                                    <span class="badge badge-selesai">
-                                        Selesai
-                                    </span>
-
-                                <?php else: ?>
-
-                                    <span class="badge">
-                                        <?= htmlspecialchars($status ?: '-') ?>
-                                    </span>
-
-                                <?php endif; ?>
-
-                            </td>
-
-
-                            <td>
-
-                                <div class="action">
-
-                                    <a
-                                        href="v_edit_peminjaman.php?id=<?= $peminjaman['id_peminjaman'] ?>"
-                                        class="btn-edit"
-                                    >
-                                        Edit
-                                    </a>
-
-
-                                    <a
-                                        href="../Controller/c_peminjaman.php?aksi=hapus&id=<?= $peminjaman['id_peminjaman'] ?>"
-                                        class="btn-delete"
-                                        onclick="return confirm('Yakin ingin menghapus data peminjaman ini?')"
-                                    >
-                                        Hapus
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    <?php
-
-                        endforeach;
-
-                    else:
-
-                    ?>
-
-                        <tr class="empty-row">
-
-                            <td colspan="7">
-                                Belum ada data peminjaman.
-                            </td>
-
-                        </tr>
-
-                    <?php endif; ?>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </main>
 
 </div>
 
 
 <script>
 
-document.getElementById('search').addEventListener('keyup', function() {
+document
+    .getElementById('search')
+    .addEventListener('keyup', function(){
 
-    let keyword = this.value.toLowerCase();
+        let keyword = this.value.toLowerCase();
 
-    let rows = document.querySelectorAll(
-        '#tabelPeminjaman tbody tr'
-    );
+        let rows = document.querySelectorAll(
+            '#tabelPeminjaman tbody tr'
+        );
 
-    rows.forEach(function(row) {
+        rows.forEach(function(row){
 
-        let text = row.innerText.toLowerCase();
+            let text = row.innerText.toLowerCase();
 
-        if (text.includes(keyword)) {
+            if(text.includes(keyword)){
+                row.style.display = '';
+            }else{
+                row.style.display = 'none';
+            }
 
-            row.style.display = '';
-
-        } else {
-
-            row.style.display = 'none';
-
-        }
+        });
 
     });
 
-});
-
 </script>
+
 
 </body>
 

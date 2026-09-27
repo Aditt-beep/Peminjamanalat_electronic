@@ -54,8 +54,6 @@ $dataPengembalian = $model->tampil_data();
         min-height: 100vh;
     }
 
-    /* SIDEBAR */
-
     .sidebar {
         width: 230px;
         background: var(--teal-deep);
@@ -135,6 +133,19 @@ $dataPengembalian = $model->tampil_data();
         color: #fff;
     }
 
+    /* SIDEBAR ICON */
+
+    .nav-item svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        opacity: .85;
+    }
+
+    .nav-item.active svg {
+        opacity: 1;
+    }
+
     .sidebar-footer {
         margin-top: auto;
         padding-top: 16px;
@@ -156,7 +167,10 @@ $dataPengembalian = $model->tampil_data();
         background: rgba(255, 255, 255, 0.08);
     }
 
-    /* MAIN */
+    .logout-btn svg {
+        width: 16px;
+        height: 16px;
+    }
 
     .main {
         flex: 1;
@@ -200,6 +214,12 @@ $dataPengembalian = $model->tampil_data();
         background: var(--teal-deep);
     }
 
+    .btn-add svg {
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+    }
+
     .panel {
         background: var(--cream);
         border: 1px solid var(--card-border);
@@ -223,11 +243,19 @@ $dataPengembalian = $model->tampil_data();
     .search-box {
         display: flex;
         align-items: center;
+        gap: 8px;
         border: 1px solid var(--card-border);
         background: #fff;
         border-radius: 8px;
         padding: 9px 12px;
         width: 250px;
+    }
+
+    .search-box svg {
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+        color: var(--muted);
     }
 
     .search-box input {
@@ -304,6 +332,9 @@ $dataPengembalian = $model->tampil_data();
 
     .btn-edit,
     .btn-delete {
+        display: flex;
+        align-items: center;
+        gap: 5px;
         border: none;
         border-radius: 7px;
         padding: 7px 10px;
@@ -320,6 +351,13 @@ $dataPengembalian = $model->tampil_data();
     .btn-delete {
         background: #fbe3e3;
         color: #a53939;
+    }
+
+    .btn-edit svg,
+    .btn-delete svg {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
     }
 
     @media (max-width: 700px) {
@@ -366,8 +404,6 @@ $dataPengembalian = $model->tampil_data();
 
 <div class="layout">
 
-<!-- SIDEBAR -->
-
 <aside class="sidebar">
 
     <div class="brand">
@@ -376,10 +412,43 @@ $dataPengembalian = $model->tampil_data();
 
             <svg viewBox="0 0 24 24" fill="none">
 
-                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#fff"/>
-                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#fff" opacity="0.7"/>
-                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#fff" opacity="0.7"/>
-                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff"/>
+                <rect
+                    x="3"
+                    y="3"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                />
+
+                <rect
+                    x="14"
+                    y="3"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                    opacity="0.7"
+                />
+
+                <rect
+                    x="3"
+                    y="14"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                    opacity="0.7"
+                />
+
+                <rect
+                    x="14"
+                    y="14"
+                    width="7"
+                    height="7"
+                    rx="1.5"
+                    fill="#fff"
+                />
 
             </svg>
 
@@ -399,38 +468,132 @@ $dataPengembalian = $model->tampil_data();
 
     </div>
 
-
     <div class="nav-group-label">
         Menu Utama
     </div>
 
-    <a class="nav-item" href="v_homeadmin.php">
-        Dashboard
-    </a>
+    <a
+        class="nav-item"
+        href="v_homeadmin.php"
+    >
 
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+        </svg>
+
+        Dashboard
+
+    </a>
 
     <div class="nav-group-label">
         Kelola Data
     </div>
 
-    <a class="nav-item" href="v_user.php">
+    <a
+        class="nav-item"
+        href="v_user.php"
+    >
+
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+        </svg>
+
         Data User
+
     </a>
 
-    <a class="nav-item" href="v_alat.php">
+
+    <a
+        class="nav-item"
+        href="v_alat.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+
         Data Alat
+
     </a>
 
-    <a class="nav-item" href="v_kategori.php">
+
+    <a
+        class="nav-item"
+        href="v_kategori.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83-2.83Z"/>
+            <circle cx="7" cy="7" r="1"/>
+        </svg>
+
         Kategori
+
     </a>
 
-    <a class="nav-item" href="v_peminjaman.php">
+
+    <a
+        class="nav-item"
+        href="v_peminjaman.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+            <rect x="9" y="3" width="6" height="4" rx="1"/>
+        </svg>
+
         Data Peminjaman
+
     </a>
 
-    <a class="nav-item active" href="v_pengembalian.php">
+
+    <a
+        class="nav-item active"
+        href="v_pengembalian.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M3 7v6h6"/>
+            <path d="M3 13a9 9 0 1 0 3-6.7L3 9"/>
+        </svg>
+
         Data Pengembalian
+
     </a>
 
 
@@ -438,21 +601,51 @@ $dataPengembalian = $model->tampil_data();
         Lainnya
     </div>
 
-    <a class="nav-item" href="v_log.php">
+    <a
+        class="nav-item"
+        href="v_log.php"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M12 8v4l3 3"/>
+            <circle cx="12" cy="12" r="9"/>
+        </svg>
+
         Log Aktivitas
+
     </a>
 
 
     <div class="sidebar-footer">
 
-        <a class="logout-btn" href="v_logout.php">
+        <a
+            class="logout-btn"
+            href="v_logout.php"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <path d="M16 17l5-5-5-5"/>
+                <path d="M21 12H9"/>
+            </svg>
+
             Keluar
+
         </a>
 
     </div>
 
 </aside>
-
 
 <main class="main">
 
@@ -474,7 +667,19 @@ $dataPengembalian = $model->tampil_data();
             href="v_tambah_pengembalian.php"
             class="btn-add"
         >
-            + Tambah Pengembalian
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M12 5v14"/>
+                <path d="M5 12h14"/>
+            </svg>
+
+            Tambah Pengembalian
+
         </a>
 
     </div>
@@ -489,6 +694,16 @@ $dataPengembalian = $model->tampil_data();
             </h2>
 
             <div class="search-box">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <circle cx="11" cy="11" r="7"/>
+                    <path d="m20 20-4-4"/>
+                </svg>
 
                 <input
                     type="text"
@@ -615,15 +830,43 @@ $dataPengembalian = $model->tampil_data();
                                     href="v_edit_pengembalian.php?id=<?= $pengembalian['id_pengembalian'] ?>"
                                     class="btn-edit"
                                 >
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path d="M12 20h9"/>
+                                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>
+                                    </svg>
+
                                     Edit
+
                                 </a>
+
 
                                 <a
                                     href="../Controller/c_pengembalian.php?aksi=hapus&id=<?= $pengembalian['id_pengembalian'] ?>"
                                     class="btn-delete"
                                     onclick="return confirm('Yakin ingin menghapus data pengembalian ini?')"
                                 >
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path d="M3 6h18"/>
+                                        <path d="M8 6V4h8v2"/>
+                                        <path d="M19 6l-1 14H6L5 6"/>
+                                        <path d="M10 11v5"/>
+                                        <path d="M14 11v5"/>
+                                    </svg>
+
                                     Hapus
+
                                 </a>
 
                             </div>
@@ -659,9 +902,9 @@ $dataPengembalian = $model->tampil_data();
     </div>
 
 </main>
-```
 
 </div>
+
 
 <script>
 
