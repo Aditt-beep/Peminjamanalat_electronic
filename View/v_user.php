@@ -10,6 +10,14 @@ $model = new m_user(
 );
 
 $dataUser = $model->tampilUser();
+$dashboardUrl = '../View/v_homeadmin.php';
+$userUrl = '../Controller/c_user.php?aksi=tampil';
+$alatUrl = '../Controller/c_alat.php?aksi=tampil';
+$kategoriUrl = '../Controller/c_kategori.php?aksi=tampil';
+$peminjamanUrl = '../Controller/c_peminjaman.php?aksi=tampil';
+$pengembalianUrl = '../Controller/c_pengembalian.php?aksi=tampil';
+$logUrl = '../Controller/c_log.php';
+$logoutUrl = '../Controller/c_logout.php';
 
 ?>
 
@@ -629,7 +637,7 @@ tbody tr:last-child td{
 
     <a
         class="nav-item"
-        href="v_log_aktivitas.php">
+        href="v_log.php">
 
         <svg
             viewBox="0 0 24 24"

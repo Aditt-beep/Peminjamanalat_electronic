@@ -231,7 +231,7 @@ tbody tr:last-child td{ border-bottom:none; }
             <path d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z"/>
             <circle cx="7" cy="7" r="1"/>
         </svg>
-        Kategori Alat
+        Kategori 
     </a>
 
     <a class="nav-item active" href="v_peminjaman.php" aria-current="page">
@@ -253,7 +253,7 @@ tbody tr:last-child td{ border-bottom:none; }
     <div class="nav-group-label">Lainnya</div>
 
     <!-- FIX: v_log.php tidak ada, log lewat controller -->
-    <a class="nav-item" href="v_log_aktivitas.php">
+    <a class="nav-item" href="v_log.php">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M12 8v4l3 3"/>
             <circle cx="12" cy="12" r="9"/>

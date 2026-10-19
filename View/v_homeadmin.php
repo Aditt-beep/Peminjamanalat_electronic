@@ -8,39 +8,96 @@ $namaUser = $user["nama"] ?? $user["username"] ?? "Admin";
 $roleUser = $user["role"] ?? "admin";
 $inisial = strtoupper(substr($namaUser, 0, 1));
 
+// ===============================
+// KONEKSI DATABASE
+// ===============================
+require_once __DIR__ . '/../Model/m_koneksi.php';
+
+$db = new koneksi();
+$conn = $db->koneksi;
+
+// ===============================
+// FUNGSI MENGAMBIL JUMLAH DATA
+// ===============================
+function hitungData($conn, $sql)
+{
+    $query = mysqli_query($conn, $sql);
+
+    if (!$query) {
+        return 0;
+    }
+
+    $data = mysqli_fetch_assoc($query);
+
+    return (int) ($data['total'] ?? 0);
+}
+
+// ===============================
+// STATISTIK DASHBOARD
+// ===============================
+
+// Total jenis alat yang terdaftar
+$total_alat = hitungData(
+    $conn,
+    "SELECT COUNT(*) AS total FROM alat"
+);
+
+// Total peminjaman yang sedang dipinjam
+$sedang_dipinjam = hitungData(
+    $conn,
+    "SELECT COUNT(*) AS total
+     FROM peminjaman
+     WHERE status = 'dipinjam'"
+);
+
+// Total akun dengan role peminjam
+$total_peminjam = hitungData(
+    $conn,
+    "SELECT COUNT(*) AS total
+     FROM tb_user
+     WHERE role = 'peminjam'"
+);
+
+// Total pengajuan yang menunggu persetujuan
+$menunggu = hitungData(
+    $conn,
+    "SELECT COUNT(*) AS total
+     FROM peminjaman
+     WHERE status = 'menunggu'"
+);
+
 /*
- * Tujuan semua tombol ada di sini. Kalau nama controller / aksi di project
- * lo beda, cukup ubah di array ini, sidebar dan kartu menu ikut berubah.
+ * Tujuan semua tombol ada di sini.
  */
 $menu = [
     "user" => [
         "judul" => "Data User",
         "desc"  => "Tambah, ubah, dan nonaktifkan akun admin, petugas, dan peminjam.",
-        "href"  => "../View/v_user.php",
+        "href"  => "../Controller/c_user.php?aksi=tampil",
         "ikon"  => '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
     ],
     "alat" => [
         "judul" => "Data Alat",
         "desc"  => "Kelola daftar alat, kondisi, jumlah, dan status ketersediaan.",
-        "href"  => "../View/v_alat.php",
+        "href"  => "../Controller/c_alat.php?aksi=tampil",
         "ikon"  => '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
     ],
     "kategori" => [
         "judul" => "Kategori Alat",
         "desc"  => "Atur pengelompokan kategori supaya alat mudah ditemukan.",
-        "href"  => "../View/v_kategori.php",
+        "href"  => "../Controller/c_kategori.php?aksi=tampil",
         "ikon"  => '<path d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z"/><circle cx="7" cy="7" r="1"/>',
     ],
     "peminjaman" => [
         "judul" => "Data Peminjaman",
         "desc"  => "Lihat dan kelola seluruh transaksi peminjaman alat.",
-        "href"  => "../View/v_peminjaman.php",
+        "href"  => "../Controller/c_peminjaman.php?aksi=tampil",
         "ikon"  => '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/>',
     ],
     "pengembalian" => [
         "judul" => "Data Pengembalian",
         "desc"  => "Pantau pengembalian alat beserta denda keterlambatan.",
-        "href"  => "../View/v_pengembalian.php",
+        "href"  => "../Controller/c_pengembalian.php?aksi=tampil",
         "ikon"  => '<path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-6.7L3 9"/>',
     ],
     "log" => [
@@ -55,13 +112,8 @@ $grupSidebar = [
     "Kelola Data" => ["user", "alat", "kategori", "peminjaman", "pengembalian"],
     "Lainnya"     => ["log"],
 ];
-
-// Angka ringkasan. Ganti 0 dengan hasil query dari model lo.
-$total_alat      = 0;
-$sedang_dipinjam = 0;
-$total_peminjam  = 0;
-$menunggu        = 0;
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -71,197 +123,462 @@ $menunggu        = 0;
 <title>pinjam.in — Dashboard Admin</title>
 
 <style>
-    :root{
-        --cream:#f4f1ea;
-        --cream-deep:#efebe1;
-        --teal-dark:#0f6b64;
-        --teal:#1a7a72;
-        --teal-deep:#0a4a45;
-        --ink:#1c2b29;
-        --muted:#7d8a87;
-        --card-border:#e4e0d6;
-        --warn:#b5601f;
+:root {
+    --cream: #f4f1ea;
+    --cream-deep: #efebe1;
+    --teal-dark: #0f6b64;
+    --teal: #1a7a72;
+    --teal-deep: #0a4a45;
+    --ink: #1c2b29;
+    --muted: #7d8a87;
+    --card-border: #e4e0d6;
+    --warn: #b5601f;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--cream-deep);
+    color: var(--ink);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 230px;
+    background: var(--teal-deep);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 16px;
+    flex-shrink: 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+    padding: 0 6px;
+}
+
+.brand .logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.brand .logo svg {
+    width: 18px;
+    height: 18px;
+}
+
+.brand-text {
+    line-height: 1.1;
+}
+
+.brand-text .name {
+    font-weight: 800;
+    font-size: 16px;
+    color: #fff;
+}
+
+.brand-text .tag {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: #8fc9c2;
+    font-weight: 700;
+}
+
+.nav-group-label {
+    font-size: 10.5px;
+    letter-spacing: .8px;
+    color: #7fa7a1;
+    font-weight: 700;
+    margin: 18px 10px 8px;
+    text-transform: uppercase;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #dce9e7;
+    margin-bottom: 2px;
+    transition: background .15s ease;
+}
+
+.nav-item svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    opacity: .85;
+}
+
+.nav-item:hover {
+    background: rgba(255,255,255,.08);
+}
+
+.nav-item.active {
+    background: var(--teal);
+    color: #fff;
+}
+
+.nav-item.active svg {
+    opacity: 1;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,.12);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #f3c9c9;
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,.08);
+}
+
+.logout-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* KONTEN */
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 32px 40px;
+    max-width: 1200px;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.topbar h1 {
+    font-size: 23px;
+    font-weight: 800;
+    margin: 0 0 4px;
+}
+
+.topbar p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--teal-deep);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.profile-text {
+    line-height: 1.2;
+    text-align: right;
+}
+
+.profile-text .pname {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.profile-text .prole {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: capitalize;
+}
+
+/* STATISTIK */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    display: block;
+    background: var(--cream);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+a.stat-card {
+    transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+
+a.stat-card:hover {
+    border-color: var(--teal);
+    box-shadow: 0 10px 24px rgba(15,45,42,.08);
+    transform: translateY(-1px);
+}
+
+.stat-card .icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.stat-card .icon svg {
+    width: 17px;
+    height: 17px;
+    color: #fff;
+}
+
+.stat-card .value {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-card .label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.icon.teal {
+    background: var(--teal);
+}
+
+.icon.deep {
+    background: var(--teal-deep);
+}
+
+.icon.warn {
+    background: var(--warn);
+}
+
+.icon.dark {
+    background: #3d4b48;
+}
+
+/* MENU */
+.section-title {
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0 0 14px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.menu-card {
+    background: var(--cream);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+
+.menu-card:hover {
+    border-color: var(--teal);
+    box-shadow: 0 10px 24px rgba(15,45,42,.08);
+    transform: translateY(-1px);
+}
+
+.menu-card .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--cream-deep);
+    border: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.menu-card .icon svg {
+    width: 17px;
+    height: 17px;
+    color: var(--teal-deep);
+}
+
+.menu-card .title {
+    font-size: 13.5px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.menu-card .desc {
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+/* INFORMASI */
+.panel {
+    background: var(--cream);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.panel-title {
+    font-size: 14px;
+    font-weight: 800;
+    margin: 0 0 8px;
+}
+
+.panel-text {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* RESPONSIF */
+@media (max-width: 1000px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    *{ box-sizing:border-box; }
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 
-    body{
-        margin:0;
-        font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
-        background:var(--cream-deep);
-        color:var(--ink);
+@media (max-width: 700px) {
+    .layout {
+        flex-direction: column;
     }
 
-    a{ color:inherit; text-decoration:none; }
-
-    :focus-visible{ outline:3px solid var(--teal); outline-offset:2px; border-radius:6px; }
-
-    /* ---------- Sidebar ---------- */
-    .layout{ display:flex; min-height:100vh; }
-
-    .sidebar{
-        width:230px;
-        background:var(--teal-deep);
-        color:#fff;
-        display:flex;
-        flex-direction:column;
-        padding:22px 16px;
-        flex-shrink:0;
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        align-items: center;
     }
 
-    .brand{ display:flex; align-items:center; gap:10px; margin-bottom:32px; padding:0 6px; }
-
-    .brand .logo{
-        width:34px; height:34px; border-radius:8px; background:var(--teal);
-        display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    }
-    .brand .logo svg{ width:18px; height:18px; }
-
-    .brand-text{ line-height:1.1; }
-    .brand-text .name{ font-weight:800; font-size:16px; color:#fff; }
-    .brand-text .tag{ font-size:9px; letter-spacing:1px; color:#8fc9c2; font-weight:700; }
-
-    .nav-group-label{
-        font-size:10.5px; letter-spacing:.8px; color:#7fa7a1; font-weight:700;
-        margin:18px 10px 8px; text-transform:uppercase;
+    .brand {
+        margin-bottom: 0;
+        margin-right: 14px;
     }
 
-    .nav-item{
-        display:flex; align-items:center; gap:10px; padding:10px 12px;
-        border-radius:8px; font-size:13.5px; font-weight:600; color:#dce9e7;
-        margin-bottom:2px; transition:background .15s ease;
-    }
-    .nav-item svg{ width:16px; height:16px; flex-shrink:0; opacity:.85; }
-    .nav-item:hover{ background:rgba(255,255,255,0.08); }
-    .nav-item.active{ background:var(--teal); color:#fff; }
-    .nav-item.active svg{ opacity:1; }
-
-    .sidebar-footer{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,0.12); }
-
-    .logout-btn{
-        display:flex; align-items:center; gap:10px; padding:10px 12px;
-        border-radius:8px; font-size:13.5px; font-weight:700; color:#f3c9c9;
-    }
-    .logout-btn:hover{ background:rgba(255,255,255,0.08); }
-    .logout-btn svg{ width:16px; height:16px; }
-
-    /* ---------- Konten ---------- */
-    .main{ flex:1; min-width:0; padding:32px 40px; max-width:1200px; }
-
-    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:28px; }
-    .topbar h1{ font-size:23px; font-weight:800; margin:0 0 4px; }
-    .topbar p{ margin:0; font-size:13px; color:var(--muted); }
-
-    .profile{ display:flex; align-items:center; gap:10px; }
-
-    .avatar{
-        width:38px; height:38px; border-radius:50%; background:var(--teal-deep);
-        color:#fff; display:flex; align-items:center; justify-content:center;
-        font-weight:700; font-size:14px; flex-shrink:0;
+    .nav-group-label {
+        display: none;
     }
 
-    .profile-text{ line-height:1.2; text-align:right; }
-    .profile-text .pname{ font-size:13px; font-weight:700; }
-    .profile-text .prole{ font-size:11px; color:var(--muted); text-transform:capitalize; }
-
-    .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
-
-    .stat-card{
-        display:block;
-        background:var(--cream);
-        border:1px solid var(--card-border);
-        border-radius:14px;
-        padding:20px;
+    .sidebar-footer {
+        margin-top: 0;
+        margin-left: auto;
+        border-top: none;
+        padding-top: 0;
     }
 
-    a.stat-card{ transition:border-color .15s ease, box-shadow .15s ease, transform .1s ease; }
-    a.stat-card:hover{
-        border-color:var(--teal);
-        box-shadow:0 10px 24px rgba(15,45,42,0.08);
-        transform:translateY(-1px);
+    .nav-item {
+        white-space: nowrap;
+        margin-bottom: 0;
     }
 
-    .stat-card .icon{
-        width:34px; height:34px; border-radius:9px;
-        display:flex; align-items:center; justify-content:center; margin-bottom:14px;
-    }
-    .stat-card .icon svg{ width:17px; height:17px; color:#fff; }
-    .stat-card .value{ font-size:26px; font-weight:800; line-height:1; margin-bottom:4px; }
-    .stat-card .label{ font-size:12px; color:var(--muted); font-weight:600; }
-
-    .icon.teal{ background:var(--teal); }
-    .icon.deep{ background:var(--teal-deep); }
-    .icon.warn{ background:var(--warn); }
-    .icon.dark{ background:#3d4b48; }
-
-    .section-title{ font-size:15px; font-weight:800; margin:0 0 14px; }
-
-    .menu-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:32px; }
-
-    .menu-card{
-        background:var(--cream);
-        border:1px solid var(--card-border);
-        border-radius:14px;
-        padding:18px;
-        display:flex;
-        align-items:flex-start;
-        gap:12px;
-        transition:border-color .15s ease, box-shadow .15s ease, transform .1s ease;
-    }
-    .menu-card:hover{
-        border-color:var(--teal);
-        box-shadow:0 10px 24px rgba(15,45,42,0.08);
-        transform:translateY(-1px);
+    .stats {
+        grid-template-columns: 1fr 1fr;
     }
 
-    .menu-card .icon{
-        width:36px; height:36px; border-radius:10px; background:var(--cream-deep);
-        border:1px solid var(--card-border);
-        display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    }
-    .menu-card .icon svg{ width:17px; height:17px; color:var(--teal-deep); }
-
-    .menu-card .title{ font-size:13.5px; font-weight:700; margin-bottom:3px; }
-    .menu-card .desc{ font-size:11.5px; color:var(--muted); line-height:1.4; }
-
-    .panel{ background:var(--cream); border:1px solid var(--card-border); border-radius:14px; padding:22px; }
-    .panel-title{ font-size:14px; font-weight:800; margin:0 0 8px; }
-    .panel-text{ font-size:12.5px; color:var(--muted); margin:0; line-height:1.6; }
-
-    /* ---------- Responsif ---------- */
-    @media (max-width:1000px){
-        .stats{ grid-template-columns:repeat(2,1fr); }
-        .menu-grid{ grid-template-columns:repeat(2,1fr); }
+    .menu-grid {
+        grid-template-columns: 1fr;
     }
 
-    @media (max-width:700px){
-        .layout{ flex-direction:column; }
-        .sidebar{ width:100%; flex-direction:row; overflow-x:auto; align-items:center; }
-        .brand{ margin-bottom:0; margin-right:14px; }
-        .nav-group-label{ display:none; }
-        .sidebar-footer{ margin-top:0; margin-left:auto; border-top:none; padding-top:0; }
-        .nav-item{ white-space:nowrap; margin-bottom:0; }
-        .stats{ grid-template-columns:1fr 1fr; }
-        .menu-grid{ grid-template-columns:1fr; }
-        .main{ padding:20px; }
-        .topbar{ align-items:flex-start; }
+    .main {
+        padding: 20px;
     }
 
-    @media (prefers-reduced-motion:reduce){ *{ transition:none !important; } }
+    .topbar {
+        align-items: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}
 </style>
 </head>
 
 <body>
-
 <div class="layout">
 
     <aside class="sidebar">
+
         <div class="brand">
             <div class="logo">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#fff"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#fff" opacity="0.7"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#fff" opacity="0.7"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#fff" opacity=".7"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#fff" opacity=".7"/>
                     <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff"/>
                 </svg>
             </div>
@@ -285,7 +602,9 @@ $menunggu        = 0;
         </a>
 
         <?php foreach ($grupSidebar as $namaGrup => $kunci): ?>
-            <div class="nav-group-label"><?= htmlspecialchars($namaGrup) ?></div>
+            <div class="nav-group-label">
+                <?= htmlspecialchars($namaGrup) ?>
+            </div>
 
             <?php foreach ($kunci as $k): $m = $menu[$k]; ?>
                 <a class="nav-item" href="<?= htmlspecialchars($m["href"]) ?>">
@@ -307,6 +626,7 @@ $menunggu        = 0;
                 Keluar
             </a>
         </div>
+
     </aside>
 
     <main class="main">
@@ -322,7 +642,10 @@ $menunggu        = 0;
                     <div class="pname"><?= htmlspecialchars($namaUser) ?></div>
                     <div class="prole"><?= htmlspecialchars($roleUser) ?></div>
                 </div>
-                <div class="avatar" aria-hidden="true"><?= htmlspecialchars($inisial) ?></div>
+
+                <div class="avatar" aria-hidden="true">
+                    <?= htmlspecialchars($inisial) ?>
+                </div>
             </div>
         </div>
 
@@ -332,7 +655,7 @@ $menunggu        = 0;
                 <div class="icon teal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><?= $menu["alat"]["ikon"] ?></svg>
                 </div>
-                <div class="value"><?= (int)$total_alat ?></div>
+                <div class="value"><?= $total_alat ?></div>
                 <div class="label">Total Alat</div>
             </a>
 
@@ -340,7 +663,7 @@ $menunggu        = 0;
                 <div class="icon warn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><?= $menu["peminjaman"]["ikon"] ?></svg>
                 </div>
-                <div class="value"><?= (int)$sedang_dipinjam ?></div>
+                <div class="value"><?= $sedang_dipinjam ?></div>
                 <div class="label">Sedang Dipinjam</div>
             </a>
 
@@ -348,7 +671,7 @@ $menunggu        = 0;
                 <div class="icon deep">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><?= $menu["user"]["ikon"] ?></svg>
                 </div>
-                <div class="value"><?= (int)$total_peminjam ?></div>
+                <div class="value"><?= $total_peminjam ?></div>
                 <div class="label">Peminjam Terdaftar</div>
             </a>
 
@@ -356,7 +679,7 @@ $menunggu        = 0;
                 <div class="icon dark">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><?= $menu["log"]["ikon"] ?></svg>
                 </div>
-                <div class="value"><?= (int)$menunggu ?></div>
+                <div class="value"><?= $menunggu ?></div>
                 <div class="label">Menunggu Persetujuan</div>
             </a>
 
@@ -368,7 +691,9 @@ $menunggu        = 0;
             <?php foreach ($menu as $m): ?>
                 <a class="menu-card" href="<?= htmlspecialchars($m["href"]) ?>">
                     <div class="icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><?= $m["ikon"] ?></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <?= $m["ikon"] ?>
+                        </svg>
                     </div>
 
                     <div>
@@ -391,8 +716,6 @@ $menunggu        = 0;
         </div>
 
     </main>
-
 </div>
-
 </body>
 </html>

@@ -1,9 +1,12 @@
 
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once __DIR__ . "/../Model/m_peminjaman.php";
 
+// Cek hak akses Admin.
 if (
     !isset($_SESSION["data"]) ||
     ($_SESSION["data"]["role"] ?? "") !== "admin"
@@ -21,17 +24,6 @@ class c_peminjaman
         $this->model = new m_peminjaman();
     }
 
-    public function index()
-    {
-        $data_peminjaman = $this->model->tampil_data();
-        include __DIR__ . "/../View/v_peminjaman.php";
-    }
-
-    public function tambah()
-    {
-        include __DIR__ . "/../View/v_tambah_peminjaman.php";
-    }
-
     public function simpan()
     {
         try {
@@ -42,31 +34,14 @@ class c_peminjaman
             $keperluan = trim($_POST["keperluan"] ?? "");
             $status = $_POST["status"] ?? "";
 
-            $status_valid = [
-                "menunggu",
-                "disetujui",
-                "ditolak",
-                "selesai"
-            ];
-
-            if (
-                $id_user < 1 ||
-                $tanggal_pengajuan === "" ||
-                $tanggal_pinjam === "" ||
-                $tanggal_kembali === "" ||
-                $keperluan === "" ||
-                !in_array($status, $status_valid, true)
-            ) {
-                throw new Exception(
-                    "Semua kolom wajib diisi dengan benar."
-                );
-            }
-
-            if ($tanggal_kembali < $tanggal_pinjam) {
-                throw new Exception(
-                    "Tanggal kembali tidak boleh sebelum tanggal peminjaman."
-                );
-            }
+            $this->validasi(
+                $id_user,
+                $tanggal_pengajuan,
+                $tanggal_pinjam,
+                $tanggal_kembali,
+                $keperluan,
+                $status
+            );
 
             $this->model->tambah(
                 $id_user,
@@ -79,35 +54,9 @@ class c_peminjaman
 
             header("Location: ../View/v_peminjaman.php");
             exit;
-
         } catch (Throwable $e) {
-            error_log("Tambah peminjaman: " . $e->getMessage());
-
-            http_response_code(500);
-            echo "<!DOCTYPE html><html lang='id'><meta charset='UTF-8'>";
-            echo "<title>Gagal menyimpan</title>";
-            echo "<body style='font-family:Arial;padding:30px'>";
-            echo "<h2>Data peminjaman gagal disimpan</h2>";
-            echo "<p>" .
-                htmlspecialchars($e->getMessage(), ENT_QUOTES, "UTF-8") .
-                "</p>";
-            echo "<p><a href='../View/v_tambah_peminjaman.php'>Kembali ke form</a></p>";
-            echo "</body></html>";
-            exit;
+            $this->tampilkanError($e->getMessage());
         }
-    }
-
-    public function edit($id)
-    {
-        $data = $this->model->get_by_id((int) $id);
-        $daftar_user = $this->model->daftar_user();
-
-        if (!$data) {
-            header("Location: ../View/v_peminjaman.php");
-            exit;
-        }
-
-        include __DIR__ . "/../View/v_edit_peminjaman.php";
     }
 
     public function update()
@@ -121,31 +70,22 @@ class c_peminjaman
             $keperluan = trim($_POST["keperluan"] ?? "");
             $status = $_POST["status"] ?? "";
 
-            $status_valid = [
-                "menunggu",
-                "disetujui",
-                "ditolak",
-                "selesai"
-            ];
-
-            if (
-                $id_peminjaman < 1 ||
-                $id_user < 1 ||
-                $tanggal_pengajuan === "" ||
-                $tanggal_pinjam === "" ||
-                $tanggal_kembali === "" ||
-                $keperluan === "" ||
-                !in_array($status, $status_valid, true)
-            ) {
-                throw new Exception(
-                    "Data edit belum lengkap atau tidak valid."
-                );
+            if ($id_peminjaman < 1) {
+                throw new Exception("ID peminjaman tidak valid.");
             }
 
-            if ($tanggal_kembali < $tanggal_pinjam) {
-                throw new Exception(
-                    "Tanggal kembali tidak boleh sebelum tanggal peminjaman."
-                );
+            $this->validasi(
+                $id_user,
+                $tanggal_pengajuan,
+                $tanggal_pinjam,
+                $tanggal_kembali,
+                $keperluan,
+                $status
+            );
+
+            // Pastikan data yang akan diedit memang ada.
+            if (!$this->model->get_by_id($id_peminjaman)) {
+                throw new Exception("Data peminjaman tidak ditemukan.");
             }
 
             $this->model->update(
@@ -160,54 +100,123 @@ class c_peminjaman
 
             header("Location: ../View/v_peminjaman.php");
             exit;
-
         } catch (Throwable $e) {
-            error_log("Edit peminjaman: " . $e->getMessage());
-
-            http_response_code(500);
-            echo "<h3>Data peminjaman gagal diperbarui.</h3>";
-            echo "<p>" .
-                htmlspecialchars($e->getMessage(), ENT_QUOTES, "UTF-8") .
-                "</p>";
-            echo '<a href="../View/v_peminjaman.php">Kembali</a>';
-            exit;
+            error_log("Update peminjaman: " . $e->getMessage());
+            $this->tampilkanError($e->getMessage());
         }
+    }
+
+    private function validasi(
+        $id_user,
+        $tanggal_pengajuan,
+        $tanggal_pinjam,
+        $tanggal_kembali,
+        $keperluan,
+        $status
+    ) {
+        $status_valid = [
+            "menunggu",
+            "disetujui",
+            "ditolak",
+            "selesai"
+        ];
+
+        if (
+            $id_user < 1 ||
+            $tanggal_pengajuan === "" ||
+            $tanggal_pinjam === "" ||
+            $tanggal_kembali === "" ||
+            $keperluan === "" ||
+            !in_array($status, $status_valid, true)
+        ) {
+            throw new Exception("Semua kolom wajib diisi dengan benar.");
+        }
+
+        foreach (
+            [$tanggal_pengajuan, $tanggal_pinjam, $tanggal_kembali]
+            as $tanggal
+        ) {
+            $date = DateTime::createFromFormat("!Y-m-d", $tanggal);
+
+            if (!$date || $date->format("Y-m-d") !== $tanggal) {
+                throw new Exception("Format tanggal tidak valid.");
+            }
+        }
+
+        if ($tanggal_kembali < $tanggal_pinjam) {
+            throw new Exception(
+                "Tanggal kembali tidak boleh sebelum tanggal peminjaman."
+            );
+        }
+    }
+
+    private function tampilkanError($pesan)
+    {
+        http_response_code(400);
+
+        echo "<!DOCTYPE html>
+        <html lang='id'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1'>
+            <title>Gagal Memproses Peminjaman</title>
+        </head>
+        <body style='font-family:Arial,sans-serif;padding:30px'>
+            <h2>Data peminjaman gagal diproses</h2>
+            <p>" .
+                htmlspecialchars($pesan, ENT_QUOTES, "UTF-8") .
+            "</p>
+            <button onclick='history.back()'>Kembali ke Form</button>
+        </body>
+        </html>";
+
+        exit;
     }
 
     public function hapus($id)
     {
         try {
-            $this->model->hapus((int) $id);
+            if ($id < 1) {
+                throw new Exception("ID peminjaman tidak valid.");
+            }
+
+            if (!$this->model->get_by_id($id)) {
+                throw new Exception("Data peminjaman tidak ditemukan.");
+            }
+
+            $this->model->hapus($id);
 
             header("Location: ../View/v_peminjaman.php");
             exit;
-
         } catch (Throwable $e) {
             error_log("Hapus peminjaman: " . $e->getMessage());
-
-            http_response_code(500);
-            echo "<h3>Data gagal dihapus.</h3>";
-            echo "<p>Data mungkin masih terhubung dengan detail peminjaman.</p>";
-            echo '<a href="../View/v_peminjaman.php">Kembali</a>';
-            exit;
+            $this->tampilkanError(
+                "Data gagal dihapus. Pastikan data tidak masih digunakan oleh detail peminjaman."
+            );
         }
     }
 }
 
-// Jalankan aksi jika controller dipanggil langsung dari form.
+// Menjalankan aksi dari form atau URL.
 $controller = new c_peminjaman();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST["tambah"])) {
         $controller->simpan();
-    }
-
-    if (isset($_POST["edit"])) {
+    } elseif (isset($_POST["edit"])) {
         $controller->update();
+    } else {
+        http_response_code(400);
+        exit("Aksi tidak valid.");
     }
 }
 
 if (isset($_GET["hapus"])) {
     $controller->hapus((int) $_GET["hapus"]);
+} elseif (
+    isset($_GET["aksi"], $_GET["id"]) &&
+    $_GET["aksi"] === "hapus"
+) {
+    $controller->hapus((int) $_GET["id"]);
 }
 ?>

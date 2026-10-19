@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 19, 2026 at 03:59 AM
+-- Generation Time: Oct 19, 2026 at 05:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -44,9 +44,9 @@ CREATE TABLE `alat` (
 --
 
 INSERT INTO `alat` (`id_alat`, `kode_alat`, `nama_alat`, `id_kategori`, `merk`, `jumlah`, `kondisi`, `status`, `deskripsi`) VALUES
-(1, 'ELC-001', 'Laptop', 1, 'ASUS', 4, 'baik', 'tersedia', 'Laptop untuk kegiatan '),
+(1, 'ELC-001', 'Laptop', 1, 'ASUS', 3, 'baik', 'tersedia', 'Laptop untuk kegiatan '),
 (2, 'ELC-002', 'Laptop', 1, 'Acer', 3, 'baik', 'tersedia', 'Laptop untuk kegiatan '),
-(3, 'ELC-003', 'Proyektor', 2, 'Epson', 3, 'baik', 'tersedia', 'Proyektor untuk presentasi'),
+(3, 'ELC-003', 'Proyektor', 2, 'Epson', 4, 'baik', 'tersedia', 'Proyektor untuk presentasi'),
 (4, 'ELC-004', 'Proyektor', 2, 'BenQ', 2, 'baik', 'tersedia', 'Proyektor untuk presentasi dan kegiatan '),
 (5, 'ELC-005', 'Kamera Digital', 3, 'Canon', 1, 'baik', 'tersedia', 'Kamera untuk dokumentasi '),
 (6, 'ELC-006', 'Kamera DSLR', 3, 'Nikon', 1, 'baik', 'tersedia', 'Kamera untuk dokumentasi dan produksi multimedia'),
@@ -58,7 +58,8 @@ INSERT INTO `alat` (`id_alat`, `kode_alat`, `nama_alat`, `id_kategori`, `merk`, 
 (12, 'ELC-012', 'Kabel HDMI', 5, 'Vention', 10, 'baik', 'tersedia', 'Kabel HDMI untuk menghubungkan laptop dengan proyektor'),
 (13, 'ELC-013', 'Charger Laptop', 5, 'Universal', 6, 'rusak_ringan', 'tersedia', 'Charger laptop cadangan'),
 (14, 'ELC-014', 'Tripod Kamera', 5, 'Takara', 3, 'baik', 'tersedia', 'Tripod untuk kamera saat dokumentasi'),
-(15, 'ELC-015', 'Webcam', 5, 'Logitech', 4, 'baik', 'tidak_aktif', 'Webcam sedang tidak digunakan');
+(15, 'ELC-015', 'Webcam', 5, 'Logitech', 4, 'baik', 'tidak_aktif', 'Webcam sedang tidak digunakan'),
+(18, 'ELC-16', 'Laptop', 1, 'Axioo', 4, 'baik', 'tersedia', 'Untuk kegiatan');
 
 -- --------------------------------------------------------
 
@@ -87,7 +88,10 @@ INSERT INTO `detail_peminjaman` (`id_detail`, `id_peminjaman`, `id_alat`, `jumla
 (6, 5, 9, 2, 'baik'),
 (7, 6, 1, 1, 'baik'),
 (8, 7, 5, 1, 'baik'),
-(9, 8, 3, 1, 'baik');
+(9, 8, 3, 1, 'baik'),
+(10, 9, 1, 1, 'baik'),
+(11, 11, 18, 1, 'baik'),
+(12, 13, 18, 1, 'baik');
 
 -- --------------------------------------------------------
 
@@ -168,9 +172,14 @@ INSERT INTO `peminjaman` (`id_peminjaman`, `id_user`, `tanggal_pengajuan`, `tang
 (3, 5, '2026-08-10', '2026-08-11', '2026-08-13', 'Presentasi tugas kelompok', 'disetujui', 3, NULL),
 (4, 2, '2026-08-18', '2026-08-19', '2026-08-21', 'Lomba presentasi', 'disetujui', 3, NULL),
 (5, 15, '2026-10-15', '2026-10-15', '2026-10-17', 'tugas', 'menunggu', NULL, NULL),
-(6, 17, '2026-10-18', '2026-10-18', '2026-10-19', 'coding', 'selesai', 18, ''),
+(6, 17, '2026-10-18', '2026-10-18', '2026-10-19', 'coding', 'disetujui', 18, ''),
 (7, 17, '2026-10-18', '2026-10-18', '2026-10-19', 'dokumentasi', 'selesai', 18, ''),
-(8, 17, '2026-10-18', '2026-10-18', '2026-10-19', 'keperluan', 'disetujui', 18, '');
+(8, 17, '2026-10-18', '2026-10-18', '2026-10-19', 'keperluan', 'selesai', 18, ''),
+(9, 17, '2026-10-19', '2026-10-19', '2026-10-20', 'presentasi', 'selesai', 18, ''),
+(10, 17, '2026-10-13', '2026-10-15', '2026-10-18', 'keperluan', 'disetujui', NULL, NULL),
+(11, 17, '2026-10-19', '2026-10-19', '2026-10-20', 'kegiatan', 'selesai', 18, ''),
+(12, 17, '2026-10-19', '2026-10-20', '2026-10-21', 'kegiatan', 'disetujui', NULL, NULL),
+(13, 17, '2026-10-19', '2026-10-19', '2026-10-20', 'keperluan', 'selesai', 18, '');
 
 -- --------------------------------------------------------
 
@@ -191,7 +200,11 @@ CREATE TABLE `pengajuan_pengembalian` (
 --
 
 INSERT INTO `pengajuan_pengembalian` (`id_pengajuan_kembali`, `id_detail`, `tanggal_pengajuan`, `status`, `keterangan`) VALUES
-(1, 8, '2026-10-18 16:07:26', 'menunggu', 'kembalikan');
+(1, 8, '2026-10-18 16:07:26', 'menunggu', 'kembalikan'),
+(2, 9, '2026-10-19 09:05:38', 'diterima', 'kondisi baik'),
+(3, 10, '2026-10-19 09:37:42', 'diterima', 'baik'),
+(4, 11, '2026-10-19 20:04:00', 'diterima', ''),
+(5, 12, '2026-10-19 22:00:04', 'diterima', 'baik');
 
 -- --------------------------------------------------------
 
@@ -217,8 +230,11 @@ INSERT INTO `pengembalian` (`id_pengembalian`, `id_detail`, `tanggal_kembali`, `
 (1, 1, '2026-08-05', 'baik', 0.00, 'Proyektor dikembalikan dengan kondisi baik', 'belum_bayar'),
 (2, 2, '2026-08-05', 'baik', 0.00, 'Kabel HDMI lengkap', 'belum_bayar'),
 (3, 3, '2026-08-08', 'baik', 0.00, 'Kamera dikembalikan dengan baik', 'belum_bayar'),
-(4, 7, '2026-10-18', 'Rusak', 0.00, '', 'lunas'),
-(5, 8, '2026-10-18', 'Baik', 0.00, '', 'lunas');
+(5, 8, '2026-10-18', 'Baik', 0.00, '', 'lunas'),
+(6, 9, '2026-10-19', 'baik', 0.00, '', 'lunas'),
+(7, 10, '2026-10-19', 'baik', 0.00, 'baik', 'lunas'),
+(8, 11, '2026-10-18', 'Rusak', 0.00, '', 'lunas'),
+(9, 12, '2026-10-19', 'baik', 0.00, '', 'lunas');
 
 -- --------------------------------------------------------
 
@@ -330,19 +346,19 @@ ALTER TABLE `tb_user`
 -- AUTO_INCREMENT for table `alat`
 --
 ALTER TABLE `alat`
-  MODIFY `id_alat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_alat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `detail_peminjaman`
 --
 ALTER TABLE `detail_peminjaman`
-  MODIFY `id_detail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_detail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
-  MODIFY `id_kategori` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_kategori` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `log_aktivitas`
@@ -354,25 +370,25 @@ ALTER TABLE `log_aktivitas`
 -- AUTO_INCREMENT for table `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  MODIFY `id_peminjaman` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_peminjaman` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `pengajuan_pengembalian`
 --
 ALTER TABLE `pengajuan_pengembalian`
-  MODIFY `id_pengajuan_kembali` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_pengajuan_kembali` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `pengembalian`
 --
 ALTER TABLE `pengembalian`
-  MODIFY `id_pengembalian` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_pengembalian` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `tb_user`
 --
 ALTER TABLE `tb_user`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Constraints for dumped tables

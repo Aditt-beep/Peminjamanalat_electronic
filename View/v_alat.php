@@ -419,7 +419,7 @@ tbody tr:last-child td { border-bottom: none; }
 
     <div class="nav-group-label">Lainnya</div>
 
-    <a class="nav-item" href="/Pinjaminn/View/v_log_aktivitas.php">
+    <a class="nav-item" href="/Pinjaminn/View/v_log.php">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 8v4l3 3"/>
             <circle cx="12" cy="12" r="9"/>

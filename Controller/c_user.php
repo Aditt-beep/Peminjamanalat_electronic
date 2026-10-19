@@ -1,26 +1,29 @@
+
 <?php
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-include_once __DIR__ . '/../Model/m_koneksi.php';
-include_once __DIR__ . '/../Model/m_user.php';
-
+require_once __DIR__ . '/../Model/m_koneksi.php';
+require_once __DIR__ . '/../Model/m_user.php';
 
 if (
     !isset($_SESSION['data']) ||
-    $_SESSION['data']['role'] !== 'admin'
+    ($_SESSION['data']['role'] ?? '') !== 'admin'
 ) {
     header("Location: ../View/v_login.php");
     exit;
 }
 
-
 $koneksi = new koneksi();
+$model = new m_user($koneksi->koneksi);
 
-$model = new m_user(
-    $koneksi->koneksi
-);
-
+// Menampilkan halaman Data User
+if (($_GET['aksi'] ?? '') === 'tampil') {
+    require __DIR__ . '/../View/v_user.php';
+    exit;
+}
 
 
 if (isset($_POST['tambah'])) {

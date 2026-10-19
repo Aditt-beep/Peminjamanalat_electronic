@@ -397,7 +397,7 @@ tbody tr:last-child td { border-bottom: none; }
 
     <div class="nav-group-label">Lainnya</div>
 
-    <a class="nav-item" href="/Pinjaminn/View/v_log_aktivitas.php">
+    <a class="nav-item" href="/Pinjaminn/View/v_log.php">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 8v4l3 3"/>
             <circle cx="12" cy="12" r="9"/>
@@ -462,7 +462,7 @@ tbody tr:last-child td { border-bottom: none; }
                 if (!empty($dataPengembalian)):
                     foreach ($dataPengembalian as $pengembalian):
                         $idPengembalian = $pengembalian['id_pengembalian'] ?? '';
-                        $kondisi = strtolower(trim((string)($pengembalian['kondisi'] ?? '')));
+                        $kondisi = strtolower(trim((string)($pengembalian['kondisi_kembali'] ?? '')));
                 ?>
                     <tr>
                         <td><?= $no++ ?></td>
@@ -476,7 +476,7 @@ tbody tr:last-child td { border-bottom: none; }
                         </td>
 
                         <td>
-                            <?= e_pengembalian($pengembalian['tanggal_pengembalian'] ?? '-') ?>
+                            <?= e_pengembalian($pengembalian['tanggal_kembali'] ?? '-') ?>
                         </td>
 
                         <td>
@@ -484,13 +484,13 @@ tbody tr:last-child td { border-bottom: none; }
                                 <span class="badge badge-baik">Baik</span>
                             <?php elseif (in_array($kondisi, ['rusak', 'rusak_ringan', 'rusak_berat'], true)): ?>
                                 <span class="badge badge-rusak">
-                                    <?= e_pengembalian($pengembalian['kondisi']) ?>
+                                    <?= e_pengembalian($pengembalian['kondisi_kembali']) ?>
                                 </span>
                             <?php elseif ($kondisi === 'hilang'): ?>
                                 <span class="badge badge-hilang">Hilang</span>
                             <?php else: ?>
                                 <span class="badge">
-                                    <?= e_pengembalian($pengembalian['kondisi'] ?? '-') ?>
+                                    <?= e_pengembalian($pengembalian['kondisi_kembali'] ?? '-') ?>
                                 </span>
                             <?php endif; ?>
                         </td>
@@ -511,13 +511,21 @@ tbody tr:last-child td { border-bottom: none; }
                                     </svg>
                                     Edit
                                 </a>
+                                <form
+                                action="/Pinjaminn/Controller/c_pengembalian.php?aksi=hapus_admin"
+                                method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus data pengembalian ini?')"
+                                style="display: inline;"
+>
+                                <input type="hidden" name="aksi" value="hapus_admin">
+                                <input
+                                 type="hidden"
+                                 name="id_pengembalian"
+                                 value="<?= e_pengembalian($idPengembalian) ?>"
+                                 >
 
-                                <a
-                                    href="/Pinjaminn/Controller/c_pengembalian.php?aksi=hapus&id=<?= urlencode((string)$idPengembalian) ?>"
-                                    class="btn-delete"
-                                    onclick="return confirm('Yakin ingin menghapus data pengembalian ini?')"
-                                >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <button type="submit" class="btn-delete">
+                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M3 6h18"/>
                                         <path d="M8 6V4h8v2"/>
                                         <path d="M19 6l-1 14H6L5 6"/>
@@ -525,7 +533,8 @@ tbody tr:last-child td { border-bottom: none; }
                                         <path d="M14 11v5"/>
                                     </svg>
                                     Hapus
-                                </a>
+                                </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

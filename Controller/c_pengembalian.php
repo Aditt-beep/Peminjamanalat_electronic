@@ -1,6 +1,5 @@
 
 <?php
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -16,7 +15,6 @@ class c_pengembalian
         $this->model = new m_pengembalian();
     }
 
-    // Memastikan pengguna yang mengakses adalah Petugas
     private function cek_petugas()
     {
         if (
@@ -28,7 +26,25 @@ class c_pengembalian
         }
     }
 
-    // Menampilkan form pengembalian
+    private function cek_admin()
+    {
+        if (
+            !isset($_SESSION["data"]["id_user"]) ||
+            ($_SESSION["data"]["role"] ?? "") !== "admin"
+        ) {
+            header("Location: ../View/v_login.php");
+            exit;
+        }
+    }
+
+    private function pesan($jenis, $isi)
+    {
+        $_SESSION["pesan_pengembalian"] = [
+            "jenis" => $jenis,
+            "isi" => $isi
+        ];
+    }
+
     public function tambah()
     {
         $this->cek_petugas();
@@ -38,7 +54,6 @@ class c_pengembalian
         include __DIR__ . "/../View/v_pengajuan_pengembalian_petugas.php";
     }
 
-    // Menghitung denda melalui Model untuk ditampilkan di View
     public function hitung_denda_ajax()
     {
         $this->cek_petugas();
@@ -54,16 +69,11 @@ class c_pengembalian
             !preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_kembali)
         ) {
             http_response_code(400);
-            echo json_encode([
-                "error" => "Input alat atau tanggal tidak valid."
-            ]);
+            echo json_encode(["error" => "Input alat atau tanggal tidak valid."]);
             exit;
         }
 
-        $tanggalInput = DateTime::createFromFormat(
-            "!Y-m-d",
-            $tanggal_kembali
-        );
+        $tanggalInput = DateTime::createFromFormat("!Y-m-d", $tanggal_kembali);
 
         if (
             !$tanggalInput ||
@@ -71,34 +81,25 @@ class c_pengembalian
             $tanggal_kembali > date("Y-m-d")
         ) {
             http_response_code(400);
-            echo json_encode([
-                "error" => "Tanggal pengembalian tidak valid."
-            ]);
+            echo json_encode(["error" => "Tanggal pengembalian tidak valid."]);
             exit;
         }
 
-        $tanggal_rencana = $this->model->get_tanggal_jatuh_tempo(
-            $id_detail
-        );
+        $tanggal_rencana = $this->model->get_tanggal_jatuh_tempo($id_detail);
 
         if (!$tanggal_rencana) {
             http_response_code(404);
             echo json_encode([
-                "error" => "Data peminjaman tidak ditemukan atau sudah dikembalikan."
+                "error" => "Peminjaman tidak ditemukan atau sudah dikembalikan."
             ]);
             exit;
         }
 
-        $hasil = $this->model->hitung_denda(
-            $tanggal_rencana,
-            $tanggal_kembali
-        );
+        $hasil = $this->model->hitung_denda($tanggal_rencana, $tanggal_kembali);
 
         if ($hasil === false) {
             http_response_code(400);
-            echo json_encode([
-                "error" => "Perhitungan denda gagal."
-            ]);
+            echo json_encode(["error" => "Perhitungan denda gagal."]);
             exit;
         }
 
@@ -107,11 +108,9 @@ class c_pengembalian
             "hari_terlambat" => $hasil["hari_terlambat"],
             "total_denda" => $hasil["total_denda"]
         ]);
-
         exit;
     }
 
-    // Menyimpan pengembalian ke database
     public function simpan()
     {
         $this->cek_petugas();
@@ -127,32 +126,17 @@ class c_pengembalian
         $keterangan = trim($_POST["keterangan"] ?? "");
         $status_bayar = $_POST["status_bayar"] ?? "belum_bayar";
 
-        $tanggalInput = DateTime::createFromFormat(
-            "!Y-m-d",
-            $tanggal_kembali
-        );
+        $tanggalInput = DateTime::createFromFormat("!Y-m-d", $tanggal_kembali);
 
         if (
             $id_detail <= 0 ||
             !$tanggalInput ||
             $tanggalInput->format("Y-m-d") !== $tanggal_kembali ||
             $tanggal_kembali > date("Y-m-d") ||
-            !in_array(
-                $kondisi_kembali,
-                ["Baik", "Rusak", "Hilang"],
-                true
-            ) ||
-            !in_array(
-                $status_bayar,
-                ["belum_bayar", "lunas"],
-                true
-            )
+            !in_array($kondisi_kembali, ["Baik", "Rusak", "Hilang"], true) ||
+            !in_array($status_bayar, ["belum_bayar", "lunas"], true)
         ) {
-            $_SESSION["pesan_pengembalian"] = [
-                "jenis" => "error",
-                "isi" => "Data pengembalian tidak valid. Periksa kembali form."
-            ];
-
+            $this->pesan("error", "Data pengembalian tidak valid.");
             header("Location: c_pengembalian.php?aksi=tambah");
             exit;
         }
@@ -165,24 +149,90 @@ class c_pengembalian
             $status_bayar
         );
 
-        if ($berhasil) {
-            $_SESSION["pesan_pengembalian"] = [
-                "jenis" => "success",
-                "isi" => "Data pengembalian berhasil disimpan."
-            ];
-        } else {
-            $_SESSION["pesan_pengembalian"] = [
-                "jenis" => "error",
-                "isi" => "Pengembalian gagal disimpan. Periksa data dan status peminjaman."
-            ];
-        }
+        $this->pesan(
+            $berhasil ? "success" : "error",
+            $berhasil
+                ? "Data pengembalian berhasil disimpan."
+                : "Pengembalian gagal disimpan. Periksa data dan status peminjaman."
+        );
 
         header("Location: c_pengembalian.php?aksi=tambah");
         exit;
     }
+
+    public function update_admin()
+    {
+        $this->cek_admin();
+
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            header("Location: ../View/v_pengembalian.php");
+            exit;
+        }
+
+        $id = (int) ($_POST["id_pengembalian"] ?? 0);
+        $tanggal = trim($_POST["tanggal_kembali"] ?? "");
+        $kondisi = trim($_POST["kondisi_kembali"] ?? "");
+        $keterangan = trim($_POST["keterangan"] ?? "");
+        $status_bayar = $_POST["status_bayar"] ?? "";
+
+        $tanggalInput = DateTime::createFromFormat("!Y-m-d", $tanggal);
+
+        if (
+            $id <= 0 ||
+            !$tanggalInput ||
+            $tanggalInput->format("Y-m-d") !== $tanggal ||
+            $tanggal > date("Y-m-d") ||
+            !in_array($kondisi, ["Baik", "Rusak", "Hilang"], true) ||
+            !in_array($status_bayar, ["belum_bayar", "lunas"], true)
+        ) {
+            $this->pesan("error", "Data edit tidak valid. Periksa kembali form.");
+            header("Location: ../View/v_edit_pengembalian.php?id=" . $id);
+            exit;
+        }
+
+        $berhasil = $this->model->update_admin(
+            $id,
+            $tanggal,
+            $kondisi,
+            $keterangan,
+            $status_bayar
+        );
+
+        $this->pesan(
+            $berhasil ? "success" : "error",
+            $berhasil
+                ? "Data pengembalian berhasil diperbarui."
+                : "Data gagal diperbarui. Periksa kembali data."
+        );
+
+        header("Location: ../View/v_pengembalian.php");
+        exit;
+    }
+
+    public function hapus_admin()
+    {
+        $this->cek_admin();
+
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            header("Location: ../View/v_pengembalian.php");
+            exit;
+        }
+
+        $id = (int) ($_POST["id_pengembalian"] ?? 0);
+        $berhasil = $id > 0 && $this->model->hapus($id);
+
+        $this->pesan(
+            $berhasil ? "success" : "error",
+            $berhasil
+                ? "Data pengembalian berhasil dihapus."
+                : "Data gagal dihapus. Periksa stok dan relasi data."
+        );
+
+        header("Location: ../View/v_pengembalian.php");
+        exit;
+    }
 }
 
-// Routing berdasarkan parameter aksi
 if (isset($_GET["aksi"])) {
     $controller = new c_pengembalian();
 
@@ -199,12 +249,28 @@ if (isset($_GET["aksi"])) {
             $controller->simpan();
             break;
 
+        case "update_admin":
+            $controller->update_admin();
+            break;
+
+        case "hapus_admin":
+            $controller->hapus_admin();
+            break;
+
         default:
-            header("Location: ../View/v_home_petugas.php");
+            if (($_SESSION["data"]["role"] ?? "") === "admin") {
+                header("Location: ../View/v_pengembalian.php");
+            } else {
+                header("Location: ../View/v_home_petugas.php");
+            }
             exit;
     }
 } else {
-    header("Location: ../View/v_home_petugas.php");
+    if (($_SESSION["data"]["role"] ?? "") === "admin") {
+        header("Location: ../View/v_pengembalian.php");
+    } else {
+        header("Location: ../View/v_home_petugas.php");
+    }
     exit;
 }
 ?>
