@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 23, 2026 at 02:35 PM
+-- Generation Time: Oct 19, 2026 at 03:59 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -44,13 +44,13 @@ CREATE TABLE `alat` (
 --
 
 INSERT INTO `alat` (`id_alat`, `kode_alat`, `nama_alat`, `id_kategori`, `merk`, `jumlah`, `kondisi`, `status`, `deskripsi`) VALUES
-(1, 'ELC-001', 'Laptop', 1, 'ASUS', 5, 'baik', 'tersedia', 'Laptop untuk kegiatan belajar dan tugas siswa'),
-(2, 'ELC-002', 'Laptop', 1, 'Acer', 3, 'baik', 'tersedia', 'Laptop untuk kegiatan pembelajaran'),
-(3, 'ELC-003', 'Proyektor', 2, 'Epson', 4, 'baik', 'tersedia', 'Proyektor untuk presentasi di kelas'),
-(4, 'ELC-004', 'Proyektor', 2, 'BenQ', 2, 'baik', 'tersedia', 'Proyektor untuk presentasi dan kegiatan sekolah'),
-(5, 'ELC-005', 'Kamera Digital', 3, 'Canon', 2, 'baik', 'tersedia', 'Kamera untuk dokumentasi kegiatan sekolah'),
+(1, 'ELC-001', 'Laptop', 1, 'ASUS', 4, 'baik', 'tersedia', 'Laptop untuk kegiatan '),
+(2, 'ELC-002', 'Laptop', 1, 'Acer', 3, 'baik', 'tersedia', 'Laptop untuk kegiatan '),
+(3, 'ELC-003', 'Proyektor', 2, 'Epson', 3, 'baik', 'tersedia', 'Proyektor untuk presentasi'),
+(4, 'ELC-004', 'Proyektor', 2, 'BenQ', 2, 'baik', 'tersedia', 'Proyektor untuk presentasi dan kegiatan '),
+(5, 'ELC-005', 'Kamera Digital', 3, 'Canon', 1, 'baik', 'tersedia', 'Kamera untuk dokumentasi '),
 (6, 'ELC-006', 'Kamera DSLR', 3, 'Nikon', 1, 'baik', 'tersedia', 'Kamera untuk dokumentasi dan produksi multimedia'),
-(7, 'ELC-007', 'Speaker Portable', 4, 'JBL', 4, 'baik', 'tersedia', 'Speaker untuk kegiatan sekolah'),
+(7, 'ELC-007', 'Speaker Portable', 4, 'JBL', 4, 'baik', 'tersedia', 'Speaker untuk kegiatan '),
 (8, 'ELC-008', 'Microphone Wireless', 4, 'Sennheiser', 3, 'baik', 'tersedia', 'Microphone wireless untuk presentasi dan acara'),
 (9, 'ELC-009', 'Headset', 5, 'Logitech', 8, 'baik', 'tersedia', 'Headset untuk kebutuhan pembelajaran multimedia'),
 (10, 'ELC-010', 'Mouse', 5, 'Logitech', 10, 'baik', 'tersedia', 'Mouse USB untuk laptop atau komputer'),
@@ -83,7 +83,11 @@ INSERT INTO `detail_peminjaman` (`id_detail`, `id_peminjaman`, `id_alat`, `jumla
 (2, 1, 12, 1, 'baik'),
 (3, 2, 5, 1, 'baik'),
 (4, 3, 4, 1, 'baik'),
-(5, 4, 2, 1, 'baik');
+(5, 4, 2, 1, 'baik'),
+(6, 5, 9, 2, 'baik'),
+(7, 6, 1, 1, 'baik'),
+(8, 7, 5, 1, 'baik'),
+(9, 8, 3, 1, 'baik');
 
 -- --------------------------------------------------------
 
@@ -129,7 +133,12 @@ INSERT INTO `log_aktivitas` (`id_log`, `id_user`, `aktivitas`, `waktu`) VALUES
 (2, 3, 'login', '2026-08-24 08:05:00'),
 (3, 2, 'mengajukan peminjaman', '2026-08-01 09:00:00'),
 (4, 3, 'menyetujui peminjaman', '2026-08-01 10:00:00'),
-(5, 4, 'login', '2026-08-05 07:30:00');
+(5, 4, 'login', '2026-08-05 07:30:00'),
+(6, 15, 'login', '2026-10-14 08:40:44'),
+(7, 15, 'login', '2026-10-15 08:17:49'),
+(8, 15, 'mengajukan peminjaman', '2026-10-15 08:18:20'),
+(9, 12, 'login', '2026-10-15 08:18:42'),
+(10, 15, 'login', '2026-10-15 08:26:29');
 
 -- --------------------------------------------------------
 
@@ -157,7 +166,32 @@ INSERT INTO `peminjaman` (`id_peminjaman`, `id_user`, `tanggal_pengajuan`, `tang
 (1, 2, '2026-08-01', '2026-08-02', '2026-08-05', 'Presentasi tugas RPL', 'selesai', 3, 'Sudah dikembalikan dengan baik'),
 (2, 4, '2026-08-05', '2026-08-06', '2026-08-08', 'Dokumentasi kegiatan sekolah', 'selesai', 3, 'Barang dikembalikan tepat waktu'),
 (3, 5, '2026-08-10', '2026-08-11', '2026-08-13', 'Presentasi tugas kelompok', 'disetujui', 3, NULL),
-(4, 2, '2026-08-18', '2026-08-19', '2026-08-21', 'Lomba presentasi', 'disetujui', 3, NULL);
+(4, 2, '2026-08-18', '2026-08-19', '2026-08-21', 'Lomba presentasi', 'disetujui', 3, NULL),
+(5, 15, '2026-10-15', '2026-10-15', '2026-10-17', 'tugas', 'menunggu', NULL, NULL),
+(6, 17, '2026-10-18', '2026-10-18', '2026-10-19', 'coding', 'selesai', 18, ''),
+(7, 17, '2026-10-18', '2026-10-18', '2026-10-19', 'dokumentasi', 'selesai', 18, ''),
+(8, 17, '2026-10-18', '2026-10-18', '2026-10-19', 'keperluan', 'disetujui', 18, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pengajuan_pengembalian`
+--
+
+CREATE TABLE `pengajuan_pengembalian` (
+  `id_pengajuan_kembali` int(11) NOT NULL,
+  `id_detail` int(11) NOT NULL,
+  `tanggal_pengajuan` datetime NOT NULL DEFAULT current_timestamp(),
+  `status` enum('menunggu','diproses','diterima','ditolak') NOT NULL DEFAULT 'menunggu',
+  `keterangan` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pengajuan_pengembalian`
+--
+
+INSERT INTO `pengajuan_pengembalian` (`id_pengajuan_kembali`, `id_detail`, `tanggal_pengajuan`, `status`, `keterangan`) VALUES
+(1, 8, '2026-10-18 16:07:26', 'menunggu', 'kembalikan');
 
 -- --------------------------------------------------------
 
@@ -171,17 +205,20 @@ CREATE TABLE `pengembalian` (
   `tanggal_kembali` date NOT NULL,
   `kondisi_kembali` varchar(50) DEFAULT NULL,
   `denda` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `keterangan` text DEFAULT NULL
+  `keterangan` text DEFAULT NULL,
+  `status_bayar` enum('belum_bayar','lunas') NOT NULL DEFAULT 'belum_bayar'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pengembalian`
 --
 
-INSERT INTO `pengembalian` (`id_pengembalian`, `id_detail`, `tanggal_kembali`, `kondisi_kembali`, `denda`, `keterangan`) VALUES
-(1, 1, '2026-08-05', 'baik', 0.00, 'Proyektor dikembalikan dengan kondisi baik'),
-(2, 2, '2026-08-05', 'baik', 0.00, 'Kabel HDMI lengkap'),
-(3, 3, '2026-08-08', 'baik', 0.00, 'Kamera dikembalikan dengan baik');
+INSERT INTO `pengembalian` (`id_pengembalian`, `id_detail`, `tanggal_kembali`, `kondisi_kembali`, `denda`, `keterangan`, `status_bayar`) VALUES
+(1, 1, '2026-08-05', 'baik', 0.00, 'Proyektor dikembalikan dengan kondisi baik', 'belum_bayar'),
+(2, 2, '2026-08-05', 'baik', 0.00, 'Kabel HDMI lengkap', 'belum_bayar'),
+(3, 3, '2026-08-08', 'baik', 0.00, 'Kamera dikembalikan dengan baik', 'belum_bayar'),
+(4, 7, '2026-10-18', 'Rusak', 0.00, '', 'lunas'),
+(5, 8, '2026-10-18', 'Baik', 0.00, '', 'lunas');
 
 -- --------------------------------------------------------
 
@@ -213,8 +250,14 @@ INSERT INTO `tb_user` (`id_user`, `nama`, `username`, `password`, `role`, `no_te
 (7, 'ssoyu', 'adit', '$2y$10$NLn/dZcnKhDHscnuwbUwTO.CzevAFvQ03.SExYZ5o8YPgJnIVd3AC', 'admin', '0987653123456', 1, '2026-09-14 02:20:48'),
 (9, 'aditya', 'cudit', '$2y$10$0itZC5lBn9gzcd0DWcQJD.0ApGmXT/CkaFcG1EioxE1I7Vw7vMGLa', 'admin', '0975356712', 1, '2026-09-21 08:29:51'),
 (10, 'cudit', 'cudit12', '$2y$10$yQPpoRbz5KAl0seVZvW3ceLpYYniiOPb9PXDQD2Niim9j1vH4Yvyq', 'admin', '098686527', 1, '2026-09-21 08:41:25'),
-(11, 'aidit', 'adt12', 'adt123', 'peminjam', NULL, 1, '2026-09-22 12:14:00'),
-(12, 'galang', 'galangg', 'galang123', 'admin', NULL, 1, '2026-09-22 12:15:36');
+(12, 'galang', 'galangg', '$2y$10$pemORuCkEUsqWsfy7sUo5OuLTNIdvJMzK5rZudZZ.rq84rjOrx4zG', 'admin', '08736537255', 1, '2026-09-22 12:15:36'),
+(13, 'lutfi', 'luthfi', '$2y$10$znOTfxmja0V7Q0skMcfwrOND2PK2LJy4hysmqQcYkyELN.wdnWHHe', 'admin', '08764682446', 1, '2026-09-28 02:26:09'),
+(14, 'zaki', 'jekk', '$2y$10$flwTPAInbypOoR0jn.M5jeHm2j.4DR9reB.3b5guUM2mfq7QqG56G', 'peminjam', '0897576257', 1, '2026-10-14 00:14:33'),
+(15, 'budiono', 'siregar', '$2y$10$YcbztesJYVALKM14w7md1etMiZf187oPzanHFDX2diF0fx41ZOP5.', 'peminjam', '098656789', 1, '2026-10-14 00:15:53'),
+(16, 'yuda', 'yudaa', '$2y$10$5fe/dXAdtJyKzrIVUPsF1evVvPd8jq3K6TQuMM/hwPDgrqADpf1u6', 'peminjam', '0897575675', 1, '2026-10-18 05:42:55'),
+(17, 'agustian', 'agus', 'agus123', 'peminjam', NULL, 1, '2026-10-18 05:50:02'),
+(18, 'septian', 'septi', 'septi123', 'petugas', NULL, 1, '2026-10-18 06:18:04'),
+(19, 'asep', 'asepp', 'asep12', 'admin', NULL, 1, '2026-10-18 11:56:58');
 
 --
 -- Indexes for dumped tables
@@ -259,6 +302,13 @@ ALTER TABLE `peminjaman`
   ADD KEY `disetujui_oleh` (`disetujui_oleh`);
 
 --
+-- Indexes for table `pengajuan_pengembalian`
+--
+ALTER TABLE `pengajuan_pengembalian`
+  ADD PRIMARY KEY (`id_pengajuan_kembali`),
+  ADD KEY `fk_pengajuan_detail` (`id_detail`);
+
+--
 -- Indexes for table `pengembalian`
 --
 ALTER TABLE `pengembalian`
@@ -280,13 +330,13 @@ ALTER TABLE `tb_user`
 -- AUTO_INCREMENT for table `alat`
 --
 ALTER TABLE `alat`
-  MODIFY `id_alat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_alat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `detail_peminjaman`
 --
 ALTER TABLE `detail_peminjaman`
-  MODIFY `id_detail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_detail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `kategori`
@@ -298,25 +348,31 @@ ALTER TABLE `kategori`
 -- AUTO_INCREMENT for table `log_aktivitas`
 --
 ALTER TABLE `log_aktivitas`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  MODIFY `id_peminjaman` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_peminjaman` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `pengajuan_pengembalian`
+--
+ALTER TABLE `pengajuan_pengembalian`
+  MODIFY `id_pengajuan_kembali` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `pengembalian`
 --
 ALTER TABLE `pengembalian`
-  MODIFY `id_pengembalian` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_pengembalian` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `tb_user`
 --
 ALTER TABLE `tb_user`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Constraints for dumped tables
@@ -347,6 +403,12 @@ ALTER TABLE `log_aktivitas`
 ALTER TABLE `peminjaman`
   ADD CONSTRAINT `peminjaman_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `tb_user` (`id_user`),
   ADD CONSTRAINT `peminjaman_ibfk_2` FOREIGN KEY (`disetujui_oleh`) REFERENCES `tb_user` (`id_user`);
+
+--
+-- Constraints for table `pengajuan_pengembalian`
+--
+ALTER TABLE `pengajuan_pengembalian`
+  ADD CONSTRAINT `fk_pengajuan_detail` FOREIGN KEY (`id_detail`) REFERENCES `detail_peminjaman` (`id_detail`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `pengembalian`

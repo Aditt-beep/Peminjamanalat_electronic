@@ -1,11 +1,14 @@
+
 <?php
-include_once __DIR__ . "/m_koneksi.php";
+require_once __DIR__ . "/m_koneksi.php";
 
-class m_kategori {
-
-    function tampil_data(){
+class m_kategori
+{
+    public function tampil_data()
+    {
         $koneksi = new koneksi();
-        $sql = "SELECT * FROM kategori"; 
+
+        $sql = "SELECT * FROM kategori ORDER BY id_kategori DESC";
         $query = mysqli_query($koneksi->koneksi, $sql);
 
         $result = [];
@@ -17,41 +20,63 @@ class m_kategori {
         return $result;
     }
 
-    function get_by_id($id) {
+    public function get_by_id($id)
+    {
         $koneksi = new koneksi();
 
-        $sql = "SELECT * FROM kategori WHERE id_kategori='$id'";
-        $query = mysqli_query($koneksi->koneksi, $sql);
+        $sql = "SELECT * FROM kategori WHERE id_kategori = ?";
+        $stmt = mysqli_prepare($koneksi->koneksi, $sql);
+
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+
+        $query = mysqli_stmt_get_result($stmt);
 
         return mysqli_fetch_assoc($query);
     }
 
-    function tambah($nama_kategori) {
+    public function tambah($nama_kategori)
+    {
         $koneksi = new koneksi();
 
-        $sql = "INSERT INTO kategori
-        (nama_kategori)
-        VALUES
-        ('$nama_kategori')";
+        $sql = "INSERT INTO kategori (nama_kategori) VALUES (?)";
+        $stmt = mysqli_prepare($koneksi->koneksi, $sql);
 
-        return mysqli_query($koneksi->koneksi, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $nama_kategori);
+
+        return mysqli_stmt_execute($stmt);
     }
 
-    function update($id_kategori, $nama_kategori) {
+    public function update($id_kategori, $nama_kategori)
+    {
         $koneksi = new koneksi();
 
-        $sql = "UPDATE kategori SET
-        nama_kategori='$nama_kategori',
-        WHERE id_kategori='$id_kategori'";
+        $sql = "UPDATE kategori
+                SET nama_kategori = ?
+                WHERE id_kategori = ?";
 
-        return mysqli_query($koneksi->koneksi, $sql);
+        $stmt = mysqli_prepare($koneksi->koneksi, $sql);
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "si",
+            $nama_kategori,
+            $id_kategori
+        );
+
+        return mysqli_stmt_execute($stmt);
     }
 
-    function hapus($id) {
-    $koneksi = new koneksi();
+    public function hapus($id)
+    {
+        $koneksi = new koneksi();
 
-    $sql = "DELETE FROM kategori WHERE id_kategori='$id'";
+        $sql = "DELETE FROM kategori WHERE id_kategori = ?";
+        $stmt = mysqli_prepare($koneksi->koneksi, $sql);
 
-    return mysqli_query($koneksi->koneksi, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $id);
+
+        return mysqli_stmt_execute($stmt);
+    }
 }
-}
+?>

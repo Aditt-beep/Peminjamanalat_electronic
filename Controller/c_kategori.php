@@ -1,52 +1,131 @@
-```php
+
 <?php
-include_once __DIR__ . "/../Model/m_kategori.php";
+session_start();
 
-class c_kategori {
+require_once __DIR__ . '/../Model/m_kategori.php';
 
-    function __construct() {
-        $this->model = new m_kategori();
-    }
+if (
+    !isset($_SESSION['data']) ||
+    ($_SESSION['data']['role'] ?? '') !== 'admin'
+) {
+    header("Location: ../View/v_login.php");
+    exit;
+}
 
-    function index() {
-        $data = $this->model->tampil_data();
+$model = new m_kategori();
 
-        include_once __DIR__ . "/../View/v_kategori.php";
-    }
+/* =========================
+   TAMBAH KATEGORI
+========================= */
+if (isset($_POST['tambah'])) {
+    $nama_kategori = trim($_POST['nama_kategori'] ?? '');
 
-    function tambah() {
-        include_once __DIR__ . "/../View/v_tambah_kategori.php";
-    }
-
-    function proses_tambah() {
-        $nama_kategori = $_POST['nama_kategori'];
-
-        $this->model->tambah($nama_kategori);
-
-        header("Location: index.php?page=kategori");
+    if ($nama_kategori === '') {
+        echo "<script>
+            alert('Nama kategori wajib diisi.');
+            window.location.href = '../View/v_tambah_kategori.php';
+        </script>";
         exit;
     }
 
-    function edit($id) {
-        $data = $this->model->get_by_id($id);
+    try {
+        $berhasil = $model->tambah($nama_kategori);
 
-        include_once __DIR__ . "/../View/v_edit_kategori.php";
-    }
+        if ($berhasil) {
+            echo "<script>
+                alert('Kategori berhasil ditambahkan!');
+                window.location.href = '../View/v_kategori.php';
+            </script>";
+            exit;
+        }
 
-    function proses_edit() {
-        $id_kategori = $_POST['id_kategori'];
-        $nama_kategori = $_POST['nama_kategori'];
-
-        $this->model->update($id_kategori, $nama_kategori);
-
-        header("Location: index.php?page=kategori");
+        echo "<script>
+            alert('Kategori gagal ditambahkan.');
+            window.location.href = '../View/v_tambah_kategori.php';
+        </script>";
         exit;
-    }
 
-    function hapus($id) {
-        $this->model->hapus($id);
+    } catch (mysqli_sql_exception $e) {
+        error_log('Tambah kategori: ' . $e->getMessage());
 
-        header("Location: index.php?page=kategori");
+        echo "<script>
+            alert('Gagal menambahkan kategori. Periksa kembali data kategori.');
+            window.location.href = '../View/v_tambah_kategori.php';
+        </script>";
         exit;
     }
 }
+
+/* =========================
+   EDIT KATEGORI
+========================= */
+if (isset($_POST['edit'])) {
+    $id_kategori = (int)($_POST['id_kategori'] ?? 0);
+    $nama_kategori = trim($_POST['nama_kategori'] ?? '');
+
+    if ($id_kategori <= 0 || $nama_kategori === '') {
+        echo "<script>
+            alert('Data kategori tidak valid.');
+            window.location.href = '../View/v_kategori.php';
+        </script>";
+        exit;
+    }
+
+    try {
+        $berhasil = $model->update($id_kategori, $nama_kategori);
+
+        echo "<script>
+            alert(" . json_encode(
+                $berhasil
+                    ? 'Kategori berhasil diperbarui!'
+                    : 'Kategori gagal diperbarui.'
+            ) . ");
+            window.location.href = '../View/v_kategori.php';
+        </script>";
+        exit;
+
+    } catch (mysqli_sql_exception $e) {
+        error_log('Edit kategori: ' . $e->getMessage());
+
+        echo "<script>
+            alert('Gagal memperbarui kategori.');
+            window.location.href = '../View/v_kategori.php';
+        </script>";
+        exit;
+    }
+}
+
+/* =========================
+   HAPUS KATEGORI
+========================= */
+if (isset($_GET['hapus'])) {
+    $id = (int)$_GET['hapus'];
+
+    try {
+        $berhasil = $id > 0 && $model->hapus($id);
+
+        echo "<script>
+            alert(" . json_encode(
+                $berhasil
+                    ? 'Kategori berhasil dihapus!'
+                    : 'Kategori gagal dihapus.'
+            ) . ");
+            window.location.href = '../View/v_kategori.php';
+        </script>";
+        exit;
+
+    } catch (mysqli_sql_exception $e) {
+        error_log('Hapus kategori: ' . $e->getMessage());
+
+        echo "<script>
+            alert('Kategori tidak bisa dihapus karena mungkin masih digunakan oleh data alat.');
+            window.location.href = '../View/v_kategori.php';
+        </script>";
+        exit;
+    }
+}
+
+// Jika controller dibuka langsung tanpa aksi
+header("Location: ../View/v_kategori.php");
+exit;
+?>

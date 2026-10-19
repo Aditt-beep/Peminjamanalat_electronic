@@ -1,648 +1,420 @@
 <?php
-
 include_once __DIR__ . '/../Model/m_koneksi.php';
 include_once __DIR__ . '/../Model/m_pengembalian.php';
 
 $model = new m_pengembalian();
-
 $dataPengembalian = $model->tampil_data();
 
+function e_pengembalian($value) {
+    return htmlspecialchars((string)($value ?? '-'), ENT_QUOTES, 'UTF-8');
+}
 ?>
 
 <!DOCTYPE html>
-
 <html lang="id">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>pinjam.in — Data Pengembalian</title>
 
 <style>
+:root {
+    --cream: #f4f1ea;
+    --cream-deep: #efebe1;
+    --teal-dark: #0f6b64;
+    --teal: #1a7a72;
+    --teal-deep: #0a4a45;
+    --ink: #1c2b29;
+    --muted: #7d8a87;
+    --card-border: #e4e0d6;
+}
 
-    :root {
-        --cream: #f4f1ea;
-        --cream-deep: #efebe1;
-        --teal-dark: #0f6b64;
-        --teal: #1a7a72;
-        --teal-deep: #0a4a45;
-        --ink: #1c2b29;
-        --muted: #7d8a87;
-        --card-border: #e4e0d6;
-    }
+* { box-sizing: border-box; }
 
-    * {
-        box-sizing: border-box;
-    }
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--cream-deep);
+    color: var(--ink);
+}
 
-    body {
-        margin: 0;
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        background: var(--cream-deep);
-        color: var(--ink);
-    }
+a { color: inherit; text-decoration: none; }
 
-    a {
-        color: inherit;
-        text-decoration: none;
-    }
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
 
-    .layout {
-        display: flex;
-        min-height: 100vh;
-    }
+.sidebar {
+    width: 230px;
+    background: var(--teal-deep);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 16px;
+    flex-shrink: 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+    padding: 0 6px;
+}
+
+.brand .logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand .logo svg {
+    width: 18px;
+    height: 18px;
+}
+
+.brand-text { line-height: 1.1; }
+.brand-text .name { font-weight: 800; font-size: 16px; }
+
+.brand-text .tag {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: #8fc9c2;
+    font-weight: 700;
+}
+
+.nav-group-label {
+    font-size: 10.5px;
+    letter-spacing: .8px;
+    color: #7fa7a1;
+    font-weight: 700;
+    margin: 18px 10px 8px;
+    text-transform: uppercase;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #dce9e7;
+    margin-bottom: 2px;
+}
+
+.nav-item:hover { background: rgba(255,255,255,.08); }
+
+.nav-item.active {
+    background: var(--teal);
+    color: #fff;
+}
+
+.nav-item svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    opacity: .85;
+}
+
+.nav-item.active svg { opacity: 1; }
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,.12);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #f3c9c9;
+}
+
+.logout-btn:hover { background: rgba(255,255,255,.08); }
+
+.logout-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.main {
+    flex: 1;
+    padding: 32px 40px;
+    min-width: 0;
+    max-width: 1200px;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.topbar h1 {
+    font-size: 23px;
+    font-weight: 800;
+    margin: 0 0 4px;
+}
+
+.topbar p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.panel {
+    background: var(--cream);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.panel-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--card-border);
+    background: #fff;
+    border-radius: 8px;
+    padding: 9px 12px;
+    width: 250px;
+}
+
+.search-box svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    color: var(--muted);
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 13px;
+}
+
+.table-wrapper { overflow-x: auto; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--muted);
+    font-weight: 700;
+    padding: 0 10px 10px;
+    border-bottom: 1px solid var(--card-border);
+    white-space: nowrap;
+}
+
+tbody td {
+    padding: 13px 10px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--card-border);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+.empty-row td {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 10px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badge-baik { background: #d9efe9; color: #0f6b64; }
+.badge-rusak { background: #fbdede; color: #a53939; }
+.badge-hilang { background: #fdecd2; color: #8a5a10; }
+
+.action {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-edit, .btn-delete {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-edit { background: #e4efed; color: var(--teal-deep); }
+.btn-delete { background: #fbe3e3; color: #a53939; }
+
+.btn-edit svg, .btn-delete svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+    .layout { flex-direction: column; }
 
     .sidebar {
-        width: 230px;
-        background: var(--teal-deep);
-        color: #fff;
-        display: flex;
+        width: 100%;
         flex-direction: column;
-        padding: 22px 16px;
-        flex-shrink: 0;
+        align-items: stretch;
     }
 
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 32px;
-        padding: 0 6px;
-    }
-
-    .brand .logo {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        background: var(--teal);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .brand .logo svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .brand-text {
-        line-height: 1.1;
-    }
-
-    .brand-text .name {
-        font-weight: 800;
-        font-size: 16px;
-    }
-
-    .brand-text .tag {
-        font-size: 9px;
-        letter-spacing: 1px;
-        color: #8fc9c2;
-        font-weight: 700;
-    }
-
-    .nav-group-label {
-        font-size: 10.5px;
-        letter-spacing: .8px;
-        color: #7fa7a1;
-        font-weight: 700;
-        margin: 18px 10px 8px;
-        text-transform: uppercase;
-    }
-
-    .nav-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        border-radius: 8px;
-        font-size: 13.5px;
-        font-weight: 600;
-        color: #dce9e7;
-        margin-bottom: 2px;
-    }
-
-    .nav-item:hover {
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .nav-item.active {
-        background: var(--teal);
-        color: #fff;
-    }
-
-    /* SIDEBAR ICON */
-
-    .nav-item svg {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-        opacity: .85;
-    }
-
-    .nav-item.active svg {
-        opacity: 1;
-    }
-
-    .sidebar-footer {
-        margin-top: auto;
-        padding-top: 16px;
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .logout-btn {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        border-radius: 8px;
-        font-size: 13.5px;
-        font-weight: 700;
-        color: #f3c9c9;
-    }
-
-    .logout-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .logout-btn svg {
-        width: 16px;
-        height: 16px;
-    }
-
-    .main {
-        flex: 1;
-        padding: 32px 40px;
-        max-width: 1200px;
-    }
+    .main { padding: 20px; }
 
     .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 28px;
-    }
-
-    .topbar h1 {
-        font-size: 23px;
-        font-weight: 800;
-        margin: 0 0 4px;
-    }
-
-    .topbar p {
-        margin: 0;
-        font-size: 13px;
-        color: var(--muted);
-    }
-
-    .btn-add {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 15px;
-        background: var(--teal-dark);
-        color: #fff;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .btn-add:hover {
-        background: var(--teal-deep);
-    }
-
-    .btn-add svg {
-        width: 15px;
-        height: 15px;
-        flex-shrink: 0;
-    }
-
-    .panel {
-        background: var(--cream);
-        border: 1px solid var(--card-border);
-        border-radius: 14px;
-        padding: 22px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
     }
 
     .panel-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 18px;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .panel-title {
-        margin: 0;
-        font-size: 15px;
-        font-weight: 800;
-    }
-
-    .search-box {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid var(--card-border);
-        background: #fff;
-        border-radius: 8px;
-        padding: 9px 12px;
-        width: 250px;
-    }
-
-    .search-box svg {
-        width: 15px;
-        height: 15px;
-        flex-shrink: 0;
-        color: var(--muted);
-    }
-
-    .search-box input {
-        border: none;
-        outline: none;
-        width: 100%;
-        font-size: 13px;
-    }
-
-    .table-wrapper {
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    thead th {
-        text-align: left;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-        color: var(--muted);
-        font-weight: 700;
-        padding: 0 10px 10px;
-        border-bottom: 1px solid var(--card-border);
-        white-space: nowrap;
-    }
-
-    tbody td {
-        padding: 13px 10px;
-        font-size: 13px;
-        border-bottom: 1px solid var(--card-border);
-    }
-
-    tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    .empty-row td {
-        text-align: center;
-        color: var(--muted);
-        padding: 30px 10px;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 700;
-    }
-
-    .badge-baik {
-        background: #d9efe9;
-        color: #0f6b64;
-    }
-
-    .badge-rusak {
-        background: #fbdede;
-        color: #a53939;
-    }
-
-    .badge-hilang {
-        background: #fdecd2;
-        color: #8a5a10;
-    }
-
-    .action {
-        display: flex;
-        gap: 6px;
-    }
-
-    .btn-edit,
-    .btn-delete {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        border: none;
-        border-radius: 7px;
-        padding: 7px 10px;
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
-    }
-
-    .btn-edit {
-        background: #e4efed;
-        color: var(--teal-deep);
-    }
-
-    .btn-delete {
-        background: #fbe3e3;
-        color: #a53939;
-    }
-
-    .btn-edit svg,
-    .btn-delete svg {
-        width: 13px;
-        height: 13px;
-        flex-shrink: 0;
-    }
-
-    @media (max-width: 700px) {
-
-        .layout {
-            flex-direction: column;
-        }
-
-        .sidebar {
-            width: 100%;
-            flex-direction: row;
-            overflow-x: auto;
-            align-items: center;
-        }
-
-        .nav-group-label {
-            display: none;
-        }
-
-        .sidebar-footer {
-            margin-top: 0;
-            margin-left: auto;
-            border-top: none;
-            padding-top: 0;
-        }
-
-        .main {
-            padding: 20px;
-        }
-
-        .topbar {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-    }
-
+    .search-box { width: 100%; }
+}
 </style>
-
 </head>
 
 <body>
-
 <div class="layout">
 
 <aside class="sidebar">
 
     <div class="brand">
-
         <div class="logo">
-
             <svg viewBox="0 0 24 24" fill="none">
-
-                <rect
-                    x="3"
-                    y="3"
-                    width="7"
-                    height="7"
-                    rx="1.5"
-                    fill="#fff"
-                />
-
-                <rect
-                    x="14"
-                    y="3"
-                    width="7"
-                    height="7"
-                    rx="1.5"
-                    fill="#fff"
-                    opacity="0.7"
-                />
-
-                <rect
-                    x="3"
-                    y="14"
-                    width="7"
-                    height="7"
-                    rx="1.5"
-                    fill="#fff"
-                    opacity="0.7"
-                />
-
-                <rect
-                    x="14"
-                    y="14"
-                    width="7"
-                    height="7"
-                    rx="1.5"
-                    fill="#fff"
-                />
-
+                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#fff"/>
+                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#fff" opacity=".7"/>
+                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#fff" opacity=".7"/>
+                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff"/>
             </svg>
-
         </div>
 
         <div class="brand-text">
-
-            <div class="name">
-                pinjam.in
-            </div>
-
-            <div class="tag">
-                ADMIN PANEL
-            </div>
-
+            <div class="name">pinjam.in</div>
+            <div class="tag">ADMIN PANEL</div>
         </div>
-
     </div>
 
-    <div class="nav-group-label">
-        Menu Utama
-    </div>
+    <div class="nav-group-label">Menu Utama</div>
 
-    <a
-        class="nav-item"
-        href="v_homeadmin.php"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-        >
+    <a class="nav-item" href="/Pinjaminn/View/v_homeadmin.php">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="9" rx="1"/>
             <rect x="14" y="3" width="7" height="5" rx="1"/>
             <rect x="14" y="12" width="7" height="9" rx="1"/>
             <rect x="3" y="16" width="7" height="5" rx="1"/>
         </svg>
-
         Dashboard
-
     </a>
 
-    <div class="nav-group-label">
-        Kelola Data
-    </div>
+    <div class="nav-group-label">Kelola Data</div>
 
-    <a
-        class="nav-item"
-        href="v_user.php"
-    >
-
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-        >
+    <a class="nav-item" href="/Pinjaminn/View/v_user.php">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="8" r="4"/>
             <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
         </svg>
-
         Data User
-
     </a>
 
-
-    <a
-        class="nav-item"
-        href="v_alat.php"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-        >
+    <a class="nav-item" href="/Pinjaminn/View/v_alat.php">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
         </svg>
-
         Data Alat
-
     </a>
 
-
-    <a
-        class="nav-item"
-        href="v_kategori.php"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-        >
-            <path d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83-2.83Z"/>
+    <a class="nav-item" href="/Pinjaminn/View/v_kategori.php">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83-2.83-2.83-2.83Z"/>
             <circle cx="7" cy="7" r="1"/>
         </svg>
-
         Kategori
-
     </a>
 
-
-    <a
-        class="nav-item"
-        href="v_peminjaman.php"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-        >
+    <a class="nav-item" href="/Pinjaminn/View/v_peminjaman.php">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
             <rect x="9" y="3" width="6" height="4" rx="1"/>
         </svg>
-
         Data Peminjaman
-
     </a>
 
-
-    <a
-        class="nav-item active"
-        href="v_pengembalian.php"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-        >
+    <a class="nav-item active" href="/Pinjaminn/View/v_pengembalian.php">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 7v6h6"/>
             <path d="M3 13a9 9 0 1 0 3-6.7L3 9"/>
         </svg>
-
         Data Pengembalian
-
     </a>
 
+    <div class="nav-group-label">Lainnya</div>
 
-    <div class="nav-group-label">
-        Lainnya
-    </div>
-
-    <a
-        class="nav-item"
-        href="v_log.php"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-        >
+    <a class="nav-item" href="/Pinjaminn/View/v_log_aktivitas.php">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 8v4l3 3"/>
             <circle cx="12" cy="12" r="9"/>
         </svg>
-
         Log Aktivitas
-
     </a>
 
-
     <div class="sidebar-footer">
-
-        <a
-            class="logout-btn"
-            href="v_logout.php"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
+        <a class="logout-btn" href="/Pinjaminn/Controller/c_logout.php"
+           onclick="return confirm('Yakin ingin keluar dari aplikasi?')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                 <path d="M16 17l5-5-5-5"/>
                 <path d="M21 12H9"/>
             </svg>
-
             Keluar
-
         </a>
-
     </div>
 
 </aside>
@@ -650,80 +422,29 @@ $dataPengembalian = $model->tampil_data();
 <main class="main">
 
     <div class="topbar">
-
         <div>
-
-            <h1>
-                Data Pengembalian
-            </h1>
-
-            <p>
-                Kelola data pengembalian alat.
-            </p>
-
+            <h1>Data Pengembalian</h1>
+            <p>Kelola data pengembalian alat.</p>
         </div>
-
-        <a
-            href="v_tambah_pengembalian.php"
-            class="btn-add"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-                <path d="M12 5v14"/>
-                <path d="M5 12h14"/>
-            </svg>
-
-            Tambah Pengembalian
-
-        </a>
-
     </div>
 
-
     <div class="panel">
-
         <div class="panel-header">
-
-            <h2 class="panel-title">
-                Daftar Pengembalian
-            </h2>
+            <h2 class="panel-title">Daftar Pengembalian</h2>
 
             <div class="search-box">
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="7"/>
                     <path d="m20 20-4-4"/>
                 </svg>
-
-                <input
-                    type="text"
-                    id="search"
-                    placeholder="Cari pengembalian..."
-                >
-
+                <input type="text" id="search" placeholder="Cari pengembalian...">
             </div>
-
         </div>
 
-
         <div class="table-wrapper">
-
             <table id="tabelPengembalian">
-
                 <thead>
-
                     <tr>
-
                         <th>No</th>
                         <th>ID Pengembalian</th>
                         <th>ID Peminjaman</th>
@@ -731,211 +452,111 @@ $dataPengembalian = $model->tampil_data();
                         <th>Kondisi</th>
                         <th>Denda</th>
                         <th>Aksi</th>
-
                     </tr>
-
                 </thead>
 
-
                 <tbody>
-
                 <?php
-
                 $no = 1;
 
                 if (!empty($dataPengembalian)):
-
                     foreach ($dataPengembalian as $pengembalian):
-
+                        $idPengembalian = $pengembalian['id_pengembalian'] ?? '';
+                        $kondisi = strtolower(trim((string)($pengembalian['kondisi'] ?? '')));
                 ?>
-
                     <tr>
+                        <td><?= $no++ ?></td>
 
                         <td>
-                            <?= $no++ ?>
+                            <?= e_pengembalian($pengembalian['id_pengembalian'] ?? '-') ?>
                         </td>
 
                         <td>
-                            <?= htmlspecialchars(
-                                $pengembalian['id_pengembalian'] ?? '-'
-                            ) ?>
+                            <?= e_pengembalian($pengembalian['id_peminjaman'] ?? '-') ?>
                         </td>
 
                         <td>
-                            <?= htmlspecialchars(
-                                $pengembalian['id_peminjaman'] ?? '-'
-                            ) ?>
+                            <?= e_pengembalian($pengembalian['tanggal_pengembalian'] ?? '-') ?>
                         </td>
 
                         <td>
-                            <?= htmlspecialchars(
-                                $pengembalian['tanggal_pengembalian'] ?? '-'
-                            ) ?>
-                        </td>
-
-                        <td>
-
-                            <?php
-
-                            $kondisi = strtolower(
-                                $pengembalian['kondisi'] ?? ''
-                            );
-
-                            if ($kondisi == 'baik'):
-
-                            ?>
-
-                                <span class="badge badge-baik">
-                                    Baik
-                                </span>
-
-                            <?php elseif ($kondisi == 'rusak'): ?>
-
+                            <?php if ($kondisi === 'baik'): ?>
+                                <span class="badge badge-baik">Baik</span>
+                            <?php elseif (in_array($kondisi, ['rusak', 'rusak_ringan', 'rusak_berat'], true)): ?>
                                 <span class="badge badge-rusak">
-                                    Rusak
+                                    <?= e_pengembalian($pengembalian['kondisi']) ?>
                                 </span>
-
-                            <?php elseif ($kondisi == 'hilang'): ?>
-
-                                <span class="badge badge-hilang">
-                                    Hilang
-                                </span>
-
+                            <?php elseif ($kondisi === 'hilang'): ?>
+                                <span class="badge badge-hilang">Hilang</span>
                             <?php else: ?>
-
                                 <span class="badge">
-                                    <?= htmlspecialchars(
-                                        $pengembalian['kondisi'] ?? '-'
-                                    ) ?>
+                                    <?= e_pengembalian($pengembalian['kondisi'] ?? '-') ?>
                                 </span>
-
                             <?php endif; ?>
-
                         </td>
 
                         <td>
-                            Rp <?= number_format(
-                                $pengembalian['denda'] ?? 0,
-                                0,
-                                ',',
-                                '.'
-                            ) ?>
+                            Rp <?= number_format((float)($pengembalian['denda'] ?? 0), 0, ',', '.') ?>
                         </td>
 
                         <td>
-
                             <div class="action">
-
                                 <a
-                                    href="v_edit_pengembalian.php?id=<?= $pengembalian['id_pengembalian'] ?>"
+                                    href="/Pinjaminn/View/v_edit_pengembalian.php?id=<?= urlencode((string)$idPengembalian) ?>"
                                     class="btn-edit"
                                 >
-
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                    >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M12 20h9"/>
                                         <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>
                                     </svg>
-
                                     Edit
-
                                 </a>
 
-
                                 <a
-                                    href="../Controller/c_pengembalian.php?aksi=hapus&id=<?= $pengembalian['id_pengembalian'] ?>"
+                                    href="/Pinjaminn/Controller/c_pengembalian.php?aksi=hapus&id=<?= urlencode((string)$idPengembalian) ?>"
                                     class="btn-delete"
                                     onclick="return confirm('Yakin ingin menghapus data pengembalian ini?')"
                                 >
-
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                    >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M3 6h18"/>
                                         <path d="M8 6V4h8v2"/>
                                         <path d="M19 6l-1 14H6L5 6"/>
                                         <path d="M10 11v5"/>
                                         <path d="M14 11v5"/>
                                     </svg>
-
                                     Hapus
-
                                 </a>
-
                             </div>
-
                         </td>
-
                     </tr>
-
                 <?php
-
                     endforeach;
-
                 else:
-
                 ?>
-
                     <tr class="empty-row">
-
-                        <td colspan="7">
-                            Belum ada data pengembalian.
-                        </td>
-
+                        <td colspan="7">Belum ada data pengembalian.</td>
                     </tr>
-
                 <?php endif; ?>
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
 
 </main>
-
 </div>
 
-
 <script>
+document.getElementById('search').addEventListener('input', function () {
+    const keyword = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#tabelPengembalian tbody tr');
 
-document.getElementById('search').addEventListener('keyup', function() {
-
-    let keyword = this.value.toLowerCase();
-
-    let rows = document.querySelectorAll(
-        '#tabelPengembalian tbody tr'
-    );
-
-    rows.forEach(function(row) {
-
-        let text = row.innerText.toLowerCase();
-
-        if (text.includes(keyword)) {
-
-            row.style.display = '';
-
-        } else {
-
-            row.style.display = 'none';
-
-        }
-
+    rows.forEach(function (row) {
+        row.style.display = row.innerText.toLowerCase().includes(keyword)
+            ? ''
+            : 'none';
     });
-
 });
-
 </script>
 
 </body>
-
 </html>

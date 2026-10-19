@@ -10,17 +10,19 @@ if (isset($_POST['register'])) {
 
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
-    $nama = trim($_POST['nama']);
+    $nama     = trim($_POST['nama']);
+    $no_telp  = trim($_POST['no_telp'] ?? '');   // <-- tambahan
 
     if ($username == "" || $password == "" || $nama == "") {
         echo "<script>
                 alert('Semua data harus diisi');
-                window.location='../View/v_register.php;
+                window.location='../View/v_register.php';
               </script>";
         exit;
     }
 
-    $hasil = $model->registerUser($nama, $username, $password);
+    // urutan harus sama dengan di model: nama, username, password, no_telp
+    $hasil = $model->registerUser($nama, $username, $password, $no_telp);
 
     if ($hasil) {
         echo "<script>
@@ -30,7 +32,7 @@ if (isset($_POST['register'])) {
     } else {
         echo "<script>
                 alert('Register gagal');
-                window.location='../View/v_register.php;
+                window.location='../View/v_register.php';
               </script>";
     }
 }

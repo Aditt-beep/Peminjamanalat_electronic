@@ -1,734 +1,482 @@
-<?php
 
+<?php
 session_start();
 
 if (
     !isset($_SESSION['data']) ||
-    $_SESSION['data']['role'] !== 'admin'
+    ($_SESSION['data']['role'] ?? '') !== 'admin'
 ) {
-    header("Location: v_login.php");
+    header("Location: /Pinjaminn/View/v_login.php");
     exit;
 }
 
+require_once __DIR__ . '/../Model/m_koneksi.php';
+
+$koneksi = new koneksi();
+
+$queryKategori = mysqli_query(
+    $koneksi->koneksi,
+    "SELECT id_kategori, nama_kategori
+     FROM kategori
+     ORDER BY nama_kategori ASC"
+);
+
+$dataKategori = [];
+
+while ($row = mysqli_fetch_assoc($queryKategori)) {
+    $dataKategori[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pinjam.in — Tambah Alat</title>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root {
+    --cream: #f4f1ea;
+    --cream-deep: #efebe1;
+    --teal-dark: #0f6b64;
+    --teal: #1a7a72;
+    --teal-deep: #0a4a45;
+    --ink: #1c2b29;
+    --muted: #7d8a87;
+    --card-border: #e4e0d6;
+}
 
-    <title>pinjam.in — Tambah Alat</title>
+* {
+    box-sizing: border-box;
+}
 
-    <style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--cream-deep);
+    color: var(--ink);
+}
 
-        :root{
-            --cream:#f4f1ea;
-            --cream-deep:#efebe1;
-            --teal-dark:#0f6b64;
-            --teal:#1a7a72;
-            --teal-deep:#0a4a45;
-            --ink:#1c2b29;
-            --muted:#7d8a87;
-            --card-border:#e4e0d6;
-        }
+a {
+    color: inherit;
+    text-decoration: none;
+}
 
-        *{
-            box-sizing:border-box;
-        }
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
 
-        body{
-            margin:0;
-            font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-            background:var(--cream-deep);
-            color:var(--ink);
-        }
+.sidebar {
+    width: 230px;
+    background: var(--teal-deep);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 16px;
+    flex-shrink: 0;
+}
 
-        a{
-            color:inherit;
-            text-decoration:none;
-        }
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+    padding: 0 6px;
+}
 
-        .layout{
-            display:flex;
-            min-height:100vh;
-        }
+.logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
 
-        .sidebar{
-            width:230px;
-            background:var(--teal-deep);
-            color:#fff;
-            display:flex;
-            flex-direction:column;
-            padding:22px 16px;
-            flex-shrink:0;
-        }
+.logo svg {
+    width: 18px;
+    height: 18px;
+}
 
-        .brand{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            margin-bottom:32px;
-            padding:0 6px;
-        }
+.brand-text {
+    line-height: 1.1;
+}
 
-        .brand .logo{
-            width:34px;
-            height:34px;
-            border-radius:8px;
-            background:var(--teal);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            flex-shrink:0;
-        }
+.brand-text .name {
+    font-weight: 800;
+    font-size: 16px;
+    color: #fff;
+}
 
-        .brand .logo svg{
-            width:18px;
-            height:18px;
-        }
+.brand-text .tag {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: #8fc9c2;
+    font-weight: 700;
+}
 
-        .brand-text{
-            line-height:1.1;
-        }
+.nav-group-label {
+    font-size: 10.5px;
+    letter-spacing: .8px;
+    color: #7fa7a1;
+    font-weight: 700;
+    margin: 18px 10px 8px;
+    text-transform: uppercase;
+}
 
-        .brand-text .name{
-            font-weight:800;
-            font-size:16px;
-            color:#fff;
-        }
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #dce9e7;
+    margin-bottom: 2px;
+    transition: background .15s ease;
+}
 
-        .brand-text .tag{
-            font-size:9px;
-            letter-spacing:1px;
-            color:#8fc9c2;
-            font-weight:700;
-        }
+.nav-item:hover {
+    background: rgba(255, 255, 255, .08);
+}
 
-        .nav-group-label{
-            font-size:10.5px;
-            letter-spacing:.8px;
-            color:#7fa7a1;
-            font-weight:700;
-            margin:18px 10px 8px;
-            text-transform:uppercase;
-        }
+.nav-item.active {
+    background: var(--teal);
+    color: #fff;
+}
 
-        .nav-item{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            padding:10px 12px;
-            border-radius:8px;
-            font-size:13.5px;
-            font-weight:600;
-            color:#dce9e7;
-            margin-bottom:2px;
-            transition:background .15s ease;
-        }
+.nav-item svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    opacity: .85;
+}
 
-        .nav-item:hover{
-            background:rgba(255,255,255,0.08);
-        }
+.nav-item.active svg {
+    opacity: 1;
+}
 
-        .nav-item.active{
-            background:var(--teal);
-            color:#fff;
-        }
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+}
 
-        .nav-item svg{
-            width:16px;
-            height:16px;
-            flex-shrink:0;
-            opacity:.85;
-        }
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #f3c9c9;
+}
 
-        .nav-item.active svg{
-            opacity:1;
-        }
+.logout-btn:hover {
+    background: rgba(255, 255, 255, .08);
+}
 
-        .sidebar-footer{
-            margin-top:auto;
-            padding-top:16px;
-            border-top:1px solid rgba(255,255,255,0.12);
-        }
+.logout-btn svg {
+    width: 16px;
+    height: 16px;
+}
 
-        .logout-btn{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            padding:10px 12px;
-            border-radius:8px;
-            font-size:13.5px;
-            font-weight:700;
-            color:#f3c9c9;
-        }
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 32px 40px;
+    max-width: 1200px;
+}
 
-        .logout-btn:hover{
-            background:rgba(255,255,255,0.08);
-        }
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
 
-        .logout-btn svg{
-            width:16px;
-            height:16px;
-        }
+.topbar h1 {
+    font-size: 23px;
+    font-weight: 800;
+    margin: 0 0 4px;
+}
 
-        .main{
-            flex:1;
-            padding:32px 40px;
-            max-width:1200px;
-        }
+.topbar p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+}
 
-        .topbar{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            margin-bottom:28px;
-        }
+.panel {
+    background: var(--cream);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 25px;
+    max-width: 750px;
+}
 
-        .topbar h1{
-            font-size:23px;
-            font-weight:800;
-            margin:0 0 4px;
-        }
+.panel-title {
+    margin: 0 0 22px;
+    font-size: 15px;
+    font-weight: 800;
+}
 
-        .topbar p{
-            margin:0;
-            font-size:13px;
-            color:var(--muted);
-        }
+.form-group {
+    margin-bottom: 18px;
+}
 
-        .panel{
-            background:var(--cream);
-            border:1px solid var(--card-border);
-            border-radius:14px;
-            padding:25px;
-            max-width:700px;
-        }
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
 
-        .panel-title{
-            margin:0 0 22px;
-            font-size:15px;
-            font-weight:800;
-        }
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+}
 
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
 
-        .form-group{
-            margin-bottom:18px;
-        }
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--teal);
+}
 
-        .form-group label{
-            display:block;
-            font-size:12px;
-            font-weight:700;
-            margin-bottom:7px;
-        }
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea{
-            width:100%;
-            padding:11px 12px;
-            border:1px solid var(--card-border);
-            border-radius:8px;
-            background:#fff;
-            color:var(--ink);
-            font-family:inherit;
-            font-size:13px;
-            outline:none;
-        }
+.form-action {
+    display: flex;
+    gap: 8px;
+    margin-top: 25px;
+}
 
-        .form-group textarea{
-            resize:vertical;
-            min-height:100px;
-        }
+.btn-save,
+.btn-cancel {
+    display: inline-block;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus{
-            border-color:var(--teal);
-        }
+.btn-save {
+    background: var(--teal-dark);
+    color: #fff;
+}
 
-        .form-row{
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:16px;
-        }
+.btn-save:hover {
+    background: var(--teal-deep);
+}
 
-        .form-action{
-            display:flex;
-            gap:8px;
-            margin-top:25px;
-        }
+.btn-cancel {
+    background: #e4e0d6;
+    color: var(--ink);
+}
 
-        .btn-save,
-        .btn-cancel{
-            border:none;
-            border-radius:8px;
-            padding:10px 16px;
-            font-size:13px;
-            font-weight:700;
-            cursor:pointer;
-            text-decoration:none;
-        }
+.btn-cancel:hover {
+    background: #d8d3c7;
+}
 
-        .btn-save{
-            background:var(--teal-dark);
-            color:#fff;
-        }
+.notice {
+    padding: 12px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    background: #fbe3e3;
+    color: #a53939;
+    font-size: 13px;
+}
 
-        .btn-save:hover{
-            background:var(--teal-deep);
-        }
+@media (max-width: 700px) {
+    .layout {
+        flex-direction: column;
+    }
 
-        .btn-cancel{
-            background:#e4e0d6;
-            color:var(--ink);
-        }
+    .sidebar {
+        width: 100%;
+    }
 
-        .btn-cancel:hover{
-            background:#d8d3c7;
-        }
+    .nav-group-label {
+        display: none;
+    }
 
-        @media(max-width:700px){
+    .sidebar-footer {
+        margin-top: 12px;
+    }
 
-            .layout{
-                flex-direction:column;
-            }
+    .main {
+        padding: 20px;
+    }
 
-            .sidebar{
-                width:100%;
-                flex-direction:row;
-                overflow-x:auto;
-                align-items:center;
-            }
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
 
-            .nav-group-label{
-                display:none;
-            }
-
-            .sidebar-footer{
-                margin-top:0;
-                margin-left:auto;
-                border-top:none;
-                padding-top:0;
-            }
-
-            .main{
-                padding:20px;
-            }
-
-            .topbar{
-                flex-direction:column;
-                align-items:flex-start;
-                gap:15px;
-            }
-
-            .form-row{
-                grid-template-columns:1fr;
-            }
-
-        }
-
-    </style>
-
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+</style>
 </head>
 
-
 <body>
-
-
 <div class="layout">
 
     <aside class="sidebar">
-
         <div class="brand">
-
             <div class="logo">
-
                 <svg viewBox="0 0 24 24" fill="none">
-
-                    <rect
-                        x="3"
-                        y="3"
-                        width="7"
-                        height="7"
-                        rx="1.5"
-                        fill="#fff"
-                    />
-
-                    <rect
-                        x="14"
-                        y="3"
-                        width="7"
-                        height="7"
-                        rx="1.5"
-                        fill="#fff"
-                        opacity="0.7"
-                    />
-
-                    <rect
-                        x="3"
-                        y="14"
-                        width="7"
-                        height="7"
-                        rx="1.5"
-                        fill="#fff"
-                        opacity="0.7"
-                    />
-
-                    <rect
-                        x="14"
-                        y="14"
-                        width="7"
-                        height="7"
-                        rx="1.5"
-                        fill="#fff"
-                    />
-
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#fff"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#fff" opacity=".7"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#fff" opacity=".7"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff"/>
                 </svg>
-
             </div>
-
 
             <div class="brand-text">
-
-                <div class="name">
-                    pinjam.in
-                </div>
-
-                <div class="tag">
-                    ADMIN PANEL
-                </div>
-
+                <div class="name">pinjam.in</div>
+                <div class="tag">ADMIN PANEL</div>
             </div>
-
         </div>
 
+        <div class="nav-group-label">Menu Utama</div>
 
-        <div class="nav-group-label">
-            Menu Utama
-        </div>
-
-        <a
-            class="nav-item"
-            href="v_homeadmin.php"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-
-                <rect
-                    x="3"
-                    y="3"
-                    width="7"
-                    height="9"
-                    rx="1"
-                />
-
-                <rect
-                    x="14"
-                    y="3"
-                    width="7"
-                    height="5"
-                    rx="1"
-                />
-
-                <rect
-                    x="14"
-                    y="12"
-                    width="7"
-                    height="9"
-                    rx="1"
-                />
-
-                <rect
-                    x="3"
-                    y="16"
-                    width="7"
-                    height="5"
-                    rx="1"
-                />
-
+        <a class="nav-item" href="/Pinjaminn/View/v_homeadmin.php">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="9" rx="1"/>
+                <rect x="14" y="3" width="7" height="5" rx="1"/>
+                <rect x="14" y="12" width="7" height="9" rx="1"/>
+                <rect x="3" y="16" width="7" height="5" rx="1"/>
             </svg>
-
             Dashboard
-
         </a>
 
-        <div class="nav-group-label">
-            Kelola Data
-        </div>
+        <div class="nav-group-label">Kelola Data</div>
 
-
-        <a
-            class="nav-item"
-            href="v_user.php"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-
-                <circle
-                    cx="12"
-                    cy="8"
-                    r="4"
-                />
-
-                <path
-                    d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"
-                />
-
+        <a class="nav-item" href="/Pinjaminn/View/v_user.php">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
             </svg>
-
             Data User
-
         </a>
 
-        <a
-            class="nav-item active"
-            href="v_alat.php"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-
-                <path
-                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
-                />
-
+        <a class="nav-item active" href="/Pinjaminn/View/v_alat.php">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
             </svg>
-
             Data Alat
-
         </a>
 
-
-        <a
-            class="nav-item"
-            href="v_kategori.php"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-
-                <path
-                    d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83l-1.42-1.42Z"
-                />
-
-                <circle
-                    cx="7"
-                    cy="7"
-                    r="1"
-                />
-
+        <a class="nav-item" href="/Pinjaminn/View/v_kategori.php">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z"/>
+                <circle cx="7" cy="7" r="1"/>
             </svg>
-
             Kategori
-
         </a>
 
-
-
-        <a
-            class="nav-item"
-            href="v_peminjaman.php"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-
-                <path
-                    d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
-                />
-
-                <rect
-                    x="9"
-                    y="3"
-                    width="6"
-                    height="4"
-                    rx="1"
-                />
-
+        <a class="nav-item" href="/Pinjaminn/View/v_peminjaman.php">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="1"/>
             </svg>
-
             Data Peminjaman
-
         </a>
 
-        <a
-            class="nav-item"
-            href="v_pengembalian.php"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-
+        <a class="nav-item" href="/Pinjaminn/View/v_pengembalian.php">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 7v6h6"/>
-
-                <path
-                    d="M3 13a9 9 0 1 0 3-6.7L3 9"
-                />
-
+                <path d="M3 13a9 9 0 1 0 3-6.7L3 9"/>
             </svg>
-
             Data Pengembalian
-
         </a>
 
+        <div class="nav-group-label">Lainnya</div>
 
-        <div class="nav-group-label">
-            Lainnya
-        </div>
-
-
-        <a
-            class="nav-item"
-            href="v_log.php"
-        >
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-
+        <a class="nav-item" href="/Pinjaminn/View/v_log_aktivitas.php">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 8v4l3 3"/>
-
-                <circle
-                    cx="12"
-                    cy="12"
-                    r="9"
-                />
-
+                <circle cx="12" cy="12" r="9"/>
             </svg>
-
             Log Aktivitas
-
         </a>
 
         <div class="sidebar-footer">
-
-            <a
-                class="logout-btn"
-                href="../Controller/c_logout.php"
-            >
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-
-                    <path
-                        d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
-                    />
-
-                    <path
-                        d="M16 17l5-5-5-5"
-                    />
-
-                    <path
-                        d="M21 12H9"
-                    />
-
+            <a class="logout-btn" href="/Pinjaminn/Controller/c_logout.php">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <path d="M16 17l5-5-5-5"/>
+                    <path d="M21 12H9"/>
                 </svg>
-
                 Keluar
-
             </a>
-
         </div>
-
-
     </aside>
 
-
     <main class="main">
-
-
         <div class="topbar">
-
             <div>
-
-                <h1>
-                    Tambah Alat
-                </h1>
-
-                <p>
-                    Tambahkan alat yang tersedia untuk dipinjam.
-                </p>
-
+                <h1>Tambah Alat</h1>
+                <p>Tambahkan alat yang tersedia untuk dipinjam.</p>
             </div>
-
         </div>
 
         <div class="panel">
+            <h2 class="panel-title">Form Tambah Alat</h2>
 
-            <h2 class="panel-title">
-                Form Tambah Alat
-            </h2>
+            <?php if (empty($dataKategori)): ?>
+                <div class="notice">
+                    Belum ada kategori alat. Silakan tambahkan kategori terlebih dahulu melalui menu Kategori.
+                </div>
+            <?php endif; ?>
 
-
-            <form
-                action="../Controller/c_alat.php"
-                method="POST"
-            >
+            <form action="/Pinjaminn/Controller/c_alat.php" method="POST">
 
                 <div class="form-row">
-
-
                     <div class="form-group">
-
-                        <label for="kode_alat">
-                            Kode Alat
-                        </label>
-
+                        <label for="kode_alat">Kode Alat</label>
                         <input
                             type="text"
                             id="kode_alat"
                             name="kode_alat"
-                            placeholder="Masukkan kode alat"
+                            placeholder="Contoh: ALT001"
                             required
                         >
-
                     </div>
 
-
                     <div class="form-group">
-
-                        <label for="nama_alat">
-                            Nama Alat
-                        </label>
-
+                        <label for="nama_alat">Nama Alat</label>
                         <input
                             type="text"
                             id="nama_alat"
@@ -736,37 +484,40 @@ if (
                             placeholder="Masukkan nama alat"
                             required
                         >
-
                     </div>
+                </div>
 
+                <div class="form-group">
+                    <label for="id_kategori">Kategori Alat</label>
 
+                    <select id="id_kategori" name="id_kategori" required>
+                        <option value="">-- Pilih Kategori --</option>
+
+                        <?php foreach ($dataKategori as $kategori): ?>
+                            <option value="<?= (int) $kategori['id_kategori'] ?>">
+                                <?= htmlspecialchars(
+                                    $kategori['nama_kategori'],
+                                    ENT_QUOTES,
+                                    'UTF-8'
+                                ) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
 
                 <div class="form-row">
-
-
                     <div class="form-group">
-
-                        <label for="merk">
-                            Merk
-                        </label>
-
+                        <label for="merk">Merk</label>
                         <input
                             type="text"
                             id="merk"
                             name="merk"
                             placeholder="Masukkan merk alat"
                         >
-
                     </div>
 
-
                     <div class="form-group">
-
-                        <label for="jumlah">
-                            Jumlah
-                        </label>
-
+                        <label for="jumlah">Jumlah</label>
                         <input
                             type="number"
                             id="jumlah"
@@ -775,136 +526,59 @@ if (
                             min="1"
                             required
                         >
-
                     </div>
-
-
                 </div>
 
                 <div class="form-row">
-
-
                     <div class="form-group">
-
-                        <label for="kondisi">
-                            Kondisi
-                        </label>
-
-                        <select
-                            id="kondisi"
-                            name="kondisi"
-                            required
-                        >
-
-                            <option value="">
-                                -- Pilih Kondisi --
-                            </option>
-
-                            <option value="baik">
-                                Baik
-                            </option>
-
-                            <option value="rusak_ringan">
-                                Rusak Ringan
-                            </option>
-
-                            <option value="rusak_berat">
-                                Rusak Berat
-                            </option>
-
+                        <label for="kondisi">Kondisi</label>
+                        <select id="kondisi" name="kondisi" required>
+                            <option value="">-- Pilih Kondisi --</option>
+                            <option value="baik">Baik</option>
+                            <option value="rusak_ringan">Rusak Ringan</option>
+                            <option value="rusak_berat">Rusak Berat</option>
                         </select>
-
                     </div>
 
-
                     <div class="form-group">
-
-                        <label for="status">
-                            Status
-                        </label>
-
-                        <select
-                            id="status"
-                            name="status"
-                            required
-                        >
-
-                            <option value="">
-                                -- Pilih Status --
-                            </option>
-
-                            <option value="tersedia">
-                                Tersedia
-                            </option>
-
-                            <option value="dipinjam">
-                                Dipinjam
-                            </option>
-
-                            <option value="nonaktif">
-                                Tidak Aktif
-                            </option>
-
+                        <label for="status">Status</label>
+                        <select id="status" name="status" required>
+                            <option value="">-- Pilih Status --</option>
+                            <option value="tersedia">Tersedia</option>
+                            <option value="dipinjam">Dipinjam</option>
+                            <option value="tidak_aktif">Tidak Aktif</option>
                         </select>
-
                     </div>
-
-
                 </div>
 
                 <div class="form-group">
-
-                    <label for="deskripsi">
-                        Deskripsi
-                    </label>
-
+                    <label for="deskripsi">Deskripsi</label>
                     <textarea
                         id="deskripsi"
                         name="deskripsi"
-                        placeholder="Masukkan deskripsi alat"
+                        placeholder="Masukkan deskripsi alat (opsional)"
                     ></textarea>
-
                 </div>
 
                 <div class="form-action">
-
-
                     <button
                         type="submit"
                         name="tambah"
+                        value="1"
                         class="btn-save"
+                        <?= empty($dataKategori) ? 'disabled' : '' ?>
                     >
-
                         Simpan Alat
-
                     </button>
 
-
-                    <a
-                        href="v_alat.php"
-                        class="btn-cancel"
-                    >
-
+                    <a href="/Pinjaminn/View/v_alat.php" class="btn-cancel">
                         Kembali
-
                     </a>
-
-
                 </div>
-
-
             </form>
-
-
         </div>
-
-
     </main>
 
-
 </div>
-
-
 </body>
-
 </html>

@@ -1,17 +1,21 @@
+
 <?php
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-include_once __DIR__ . '/../Model/m_koneksi.php';
+require_once __DIR__ . '/../Model/m_koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $koneksi = new koneksi();
-   
-    $user = trim($_POST['username']);
-    $pass = trim($_POST['password']);
 
-    if ($user == "" || $pass == "") {
+    $user = trim($_POST['username'] ?? '');
+    $pass = trim($_POST['password'] ?? '');
+
+    // Validasi input
+    if ($user === '' || $pass === '') {
         echo "<script>
                 alert('Isi username dan password');
                 window.location='../View/v_login.php';
@@ -19,8 +23,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    $user = mysqli_real_escape_string($koneksi->koneksi, $user);
+    // Amankan username
+    $user = mysqli_real_escape_string(
+        $koneksi->koneksi,
+        $user
+    );
 
+    // Cari akun yang aktif
     $query = mysqli_query(
         $koneksi->koneksi,
         "SELECT * FROM tb_user
@@ -33,25 +42,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $data = mysqli_fetch_assoc($query);
 
+        // Pengecekan password sesuai sistem yang sekarang
         if ($pass == $data['password']) {
 
+            // Simpan data pengguna ke session
+            session_regenerate_id(true);
             $_SESSION['data'] = $data;
 
-            if ($data['role'] == 'admin') {
+            // Normalisasi role
+            $role = strtolower(trim($data['role'] ?? ''));
 
-                header("Location: ../View/v_homeadmin.php");
+            // Tentukan halaman berdasarkan role
+            if ($role == 'admin') {
 
-            } elseif ($data['role'] == 'petugas') {
-                header("Location: ../View/v_homepetugas.php");
-            } elseif ($data['role'] == 'peminjam') {
-                header("Location: ../View/v_homepeminjam.php");
+                $tujuan = '../View/v_homeadmin.php';
+
+            } elseif ($role == 'petugas') {
+
+                $tujuan = '../View/v_home_petugas.php';
+
+            } elseif ($role == 'peminjam') {
+
+                $tujuan = '../View/v_homepeminjam.php';
+
             } else {
+
+                unset($_SESSION['data']);
+
                 echo "<script>
                         alert('Role tidak dikenali');
                         window.location='../View/v_login.php';
                       </script>";
+                exit;
             }
 
+            // Redirect ke dashboard
+            header("Location: " . $tujuan);
             exit;
 
         } else {
@@ -72,4 +98,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 }
+
 ?>

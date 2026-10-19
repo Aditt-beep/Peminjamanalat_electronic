@@ -1,11 +1,19 @@
+
 <?php
 include_once __DIR__ . "/m_koneksi.php";
 
-class m_alat {
-
-    function tampil_data(){
+class m_alat
+{
+    public function tampil_data()
+    {
         $koneksi = new koneksi();
-        $sql = "SELECT * FROM alat"; 
+
+        $sql = "SELECT alat.*, kategori.nama_kategori
+                FROM alat
+                LEFT JOIN kategori
+                    ON alat.id_kategori = kategori.id_kategori
+                ORDER BY alat.id_alat DESC";
+
         $query = mysqli_query($koneksi->koneksi, $sql);
 
         $result = [];
@@ -17,45 +25,108 @@ class m_alat {
         return $result;
     }
 
-    function get_by_id($id) {
+    public function get_by_id($id)
+    {
         $koneksi = new koneksi();
 
-        $sql = "SELECT * FROM alat WHERE id_alat='$id'";
-        $query = mysqli_query($koneksi->koneksi, $sql);
+        $sql = "SELECT * FROM alat WHERE id_alat = ?";
+        $stmt = mysqli_prepare($koneksi->koneksi, $sql);
 
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+
+        $query = mysqli_stmt_get_result($stmt);
         return mysqli_fetch_assoc($query);
     }
 
-    function tambah($nama_alat, $merk, $jumlah, $kondisi, $status) {
+    public function tambah(
+        $kode_alat,
+        $nama_alat,
+        $id_kategori,
+        $merk,
+        $jumlah,
+        $kondisi,
+        $status,
+        $deskripsi = ""
+    ) {
         $koneksi = new koneksi();
 
         $sql = "INSERT INTO alat
-        (nama_alat, merk, jumlah, kondisi, status)
-        VALUES
-        ('$nama_alat', '$merk', '$jumlah', '$kondisi', '$status')";
+                    (kode_alat, nama_alat, id_kategori, merk,
+                     jumlah, kondisi, status, deskripsi)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        return mysqli_query($koneksi->koneksi, $sql);
+        $stmt = mysqli_prepare($koneksi->koneksi, $sql);
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "ssisisss",
+            $kode_alat,
+            $nama_alat,
+            $id_kategori,
+            $merk,
+            $jumlah,
+            $kondisi,
+            $status,
+            $deskripsi
+        );
+
+        return mysqli_stmt_execute($stmt);
     }
 
-    function update($id_alat, $nama_alat, $merk, $jumlah, $kondisi, $status) {
+    public function update(
+        $id_alat,
+        $kode_alat,
+        $nama_alat,
+        $id_kategori,
+        $merk,
+        $jumlah,
+        $kondisi,
+        $status,
+        $deskripsi = ""
+    ) {
         $koneksi = new koneksi();
 
         $sql = "UPDATE alat SET
-        nama_alat='$nama_alat',
-        merk='$merk',
-        jumlah='$jumlah',
-        kondisi='$kondisi',
-        status='$status'
-        WHERE id_alat='$id_alat'";
+                    kode_alat = ?,
+                    nama_alat = ?,
+                    id_kategori = ?,
+                    merk = ?,
+                    jumlah = ?,
+                    kondisi = ?,
+                    status = ?,
+                    deskripsi = ?
+                WHERE id_alat = ?";
 
-        return mysqli_query($koneksi->koneksi, $sql);
+        $stmt = mysqli_prepare($koneksi->koneksi, $sql);
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "ssisisssi",
+            $kode_alat,
+            $nama_alat,
+            $id_kategori,
+            $merk,
+            $jumlah,
+            $kondisi,
+            $status,
+            $deskripsi,
+            $id_alat
+        );
+
+        return mysqli_stmt_execute($stmt);
     }
 
-    function hapus($id) {
-    $koneksi = new koneksi();
+    public function hapus($id)
+    {
+        $koneksi = new koneksi();
 
-    $sql = "DELETE FROM alat WHERE id_alat='$id'";
+        $sql = "DELETE FROM alat WHERE id_alat = ?";
+        $stmt = mysqli_prepare($koneksi->koneksi, $sql);
 
-    return mysqli_query($koneksi->koneksi, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $id);
+
+        return mysqli_stmt_execute($stmt);
+    }
 }
-}
+?>

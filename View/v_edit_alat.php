@@ -1,31 +1,27 @@
-<?php
 
+<?php
 session_start();
 
-include_once __DIR__ . '/../Model/m_koneksi.php';
-include_once __DIR__ . '/../Model/m_alat.php';
+require_once __DIR__ . '/../Model/m_koneksi.php';
+require_once __DIR__ . '/../Model/m_alat.php';
 
 if (
     !isset($_SESSION['data']) ||
-    $_SESSION['data']['role'] !== 'admin'
+    ($_SESSION['data']['role'] ?? '') !== 'admin'
 ) {
     header("Location: v_login.php");
     exit;
 }
 
-if (!isset($_GET['id'])) {
+if (!isset($_GET['id']) || (int)$_GET['id'] <= 0) {
     header("Location: v_alat.php");
     exit;
 }
 
 $koneksi = new koneksi();
+$model = new m_alat();
 
-$model = new m_alat(
-    $koneksi->koneksi
-);
-
-$id = (int)$_GET['id'];
-
+$id = (int) $_GET['id'];
 $alat = $model->get_by_id($id);
 
 if (!$alat) {
@@ -33,880 +29,503 @@ if (!$alat) {
     exit;
 }
 
+// Ambil data kategori untuk dropdown
+$queryKategori = mysqli_query(
+    $koneksi->koneksi,
+    "SELECT id_kategori, nama_kategori
+     FROM kategori
+     ORDER BY nama_kategori ASC"
+);
+
+$dataKategori = [];
+
+while ($row = mysqli_fetch_assoc($queryKategori)) {
+    $dataKategori[] = $row;
+}
+
+function e($value)
+{
+    return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8');
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pinjam.in — Edit Alat</title>
 
-<meta charset="UTF-8">
+    <style>
+        :root {
+            --cream: #f4f1ea;
+            --cream-deep: #efebe1;
+            --teal-dark: #0f6b64;
+            --teal: #1a7a72;
+            --teal-deep: #0a4a45;
+            --ink: #1c2b29;
+            --muted: #7d8a87;
+            --card-border: #e4e0d6;
+        }
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        * {
+            box-sizing: border-box;
+        }
 
-<title>pinjam.in — Edit Alat</title>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--cream-deep);
+            color: var(--ink);
+        }
 
-<style>
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
 
-:root{
-    --cream:#f4f1ea;
-    --cream-deep:#efebe1;
-    --teal-dark:#0f6b64;
-    --teal:#1a7a72;
-    --teal-deep:#0a4a45;
-    --ink:#1c2b29;
-    --muted:#7d8a87;
-    --card-border:#e4e0d6;
-}
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
 
-*{
-    box-sizing:border-box;
-}
+        .sidebar {
+            width: 230px;
+            background: var(--teal-deep);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 22px 16px;
+            flex-shrink: 0;
+        }
 
-body{
-    margin:0;
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-    background:var(--cream-deep);
-    color:var(--ink);
-}
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            padding: 0 6px;
+        }
 
-a{
-    color:inherit;
-    text-decoration:none;
-}
+        .logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 800;
+        }
 
-.layout{
-    display:flex;
-    min-height:100vh;
-}
+        .brand-text {
+            line-height: 1.1;
+        }
 
-.sidebar{
-    width:230px;
-    background:var(--teal-deep);
-    color:#fff;
-    display:flex;
-    flex-direction:column;
-    padding:22px 16px;
-    flex-shrink:0;
-}
+        .brand-text .name {
+            font-weight: 800;
+            font-size: 16px;
+        }
 
-.brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:32px;
-    padding:0 6px;
-}
+        .brand-text .tag {
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: #8fc9c2;
+            font-weight: 700;
+            margin-top: 4px;
+        }
 
-.brand .logo{
-    width:34px;
-    height:34px;
-    border-radius:8px;
-    background:var(--teal);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-shrink:0;
-}
+        .nav-group-label {
+            font-size: 10.5px;
+            letter-spacing: .8px;
+            color: #7fa7a1;
+            font-weight: 700;
+            margin: 18px 10px 8px;
+            text-transform: uppercase;
+        }
 
-.brand .logo svg{
-    width:18px;
-    height:18px;
-}
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #dce9e7;
+            margin-bottom: 2px;
+            transition: background .15s ease;
+        }
 
-.brand-text{
-    line-height:1.1;
-}
+        .nav-item:hover {
+            background: rgba(255,255,255,.08);
+        }
 
-.brand-text .name{
-    font-weight:800;
-    font-size:16px;
-    color:#fff;
-}
+        .nav-item.active {
+            background: var(--teal);
+            color: white;
+        }
 
-.brand-text .tag{
-    font-size:9px;
-    letter-spacing:1px;
-    color:#8fc9c2;
-    font-weight:700;
-}
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,.12);
+        }
 
-.nav-group-label{
-    font-size:10.5px;
-    letter-spacing:.8px;
-    color:#7fa7a1;
-    font-weight:700;
-    margin:18px 10px 8px;
-    text-transform:uppercase;
-}
+        .logout-btn {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #f3c9c9;
+        }
 
-.nav-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border-radius:8px;
-    font-size:13.5px;
-    font-weight:600;
-    color:#dce9e7;
-    margin-bottom:2px;
-    transition:background .15s ease;
-}
+        .logout-btn:hover {
+            background: rgba(255,255,255,.08);
+        }
 
-.nav-item:hover{
-    background:rgba(255,255,255,0.08);
-}
+        .main {
+            flex: 1;
+            padding: 32px 40px;
+            max-width: 1200px;
+            min-width: 0;
+        }
 
-.nav-item.active{
-    background:var(--teal);
-    color:#fff;
-}
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
 
-.nav-item svg{
-    width:16px;
-    height:16px;
-    flex-shrink:0;
-    opacity:.85;
-}
+        .topbar h1 {
+            font-size: 23px;
+            font-weight: 800;
+            margin: 0 0 4px;
+        }
 
-.nav-item.active svg{
-    opacity:1;
-}
+        .topbar p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
 
-.sidebar-footer{
-    margin-top:auto;
-    padding-top:16px;
-    border-top:1px solid rgba(255,255,255,0.12);
-}
+        .panel {
+            background: var(--cream);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 22px;
+            max-width: 700px;
+        }
 
-.logout-btn{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border-radius:8px;
-    font-size:13.5px;
-    font-weight:700;
-    color:#f3c9c9;
-}
+        .panel-title {
+            margin: 0 0 22px;
+            font-size: 15px;
+            font-weight: 800;
+        }
 
-.logout-btn:hover{
-    background:rgba(255,255,255,0.08);
-}
+        .form-group {
+            margin-bottom: 18px;
+        }
 
-.logout-btn svg{
-    width:16px;
-    height:16px;
-}
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
 
-/* MAIN */
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background: white;
+            color: var(--ink);
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+        }
 
-.main{
-    flex:1;
-    padding:32px 40px;
-    max-width:1200px;
-}
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--teal);
+        }
 
-.topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:28px;
-}
+        .form-group textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
 
-.topbar h1{
-    font-size:23px;
-    font-weight:800;
-    margin:0 0 4px;
-}
+        .form-action {
+            display: flex;
+            gap: 8px;
+            margin-top: 25px;
+        }
 
-.topbar p{
-    margin:0;
-    font-size:13px;
-    color:var(--muted);
-}
+        .btn-save,
+        .btn-cancel {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
 
-.panel{
-    background:var(--cream);
-    border:1px solid var(--card-border);
-    border-radius:14px;
-    padding:22px;
-    max-width:700px;
-}
+        .btn-save {
+            background: var(--teal-dark);
+            color: white;
+        }
 
-.panel-title{
-    margin:0 0 22px;
-    font-size:15px;
-    font-weight:800;
-}
+        .btn-save:hover {
+            background: var(--teal-deep);
+        }
 
-.form-group{
-    margin-bottom:18px;
-}
+        .btn-cancel {
+            background: #e4e0d6;
+            color: var(--ink);
+        }
 
-.form-group label{
-    display:block;
-    font-size:12px;
-    font-weight:700;
-    margin-bottom:7px;
-}
+        .btn-cancel:hover {
+            background: #d8d3c7;
+        }
 
-.form-group input,
-.form-group select,
-.form-group textarea{
-    width:100%;
-    padding:11px 12px;
-    border:1px solid var(--card-border);
-    border-radius:8px;
-    background:#fff;
-    color:var(--ink);
-    font-family:inherit;
-    font-size:13px;
-    outline:none;
-}
+        @media (max-width: 700px) {
+            .layout {
+                flex-direction: column;
+            }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus{
-    border-color:var(--teal);
-}
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+            }
 
-.form-group textarea{
-    min-height:110px;
-    resize:vertical;
-}
+            .brand {
+                margin-bottom: 12px;
+            }
 
-.form-action{
-    display:flex;
-    gap:8px;
-    margin-top:25px;
-}
+            .nav-group-label {
+                display: none;
+            }
 
-.btn-save,
-.btn-cancel{
-    border:none;
-    border-radius:8px;
-    padding:10px 16px;
-    font-size:13px;
-    font-weight:700;
-    cursor:pointer;
-    text-decoration:none;
-}
+            .nav-item {
+                padding: 9px;
+            }
 
-.btn-save{
-    background:var(--teal-dark);
-    color:#fff;
-}
+            .sidebar-footer {
+                margin-top: 10px;
+            }
 
-.btn-save:hover{
-    background:var(--teal-deep);
-}
+            .main {
+                padding: 20px;
+            }
 
-.btn-cancel{
-    background:#e4e0d6;
-    color:var(--ink);
-}
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
 
-.btn-cancel:hover{
-    background:#d8d3c7;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:700px){
-
-    .layout{
-        flex-direction:column;
-    }
-
-    .sidebar{
-        width:100%;
-        flex-direction:row;
-        overflow-x:auto;
-        align-items:center;
-    }
-
-    .nav-group-label{
-        display:none;
-    }
-
-    .sidebar-footer{
-        margin-top:0;
-        margin-left:auto;
-        border-top:none;
-        padding-top:0;
-    }
-
-    .main{
-        padding:20px;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .panel{
-        max-width:100%;
-    }
-
-}
-
-</style>
-
+            .panel {
+                max-width: 100%;
+                padding: 18px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
 <div class="layout">
 
-<aside class="sidebar">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">P</div>
 
-<div class="brand">
-
-    <div class="logo">
-
-        <svg viewBox="0 0 24 24" fill="none">
-
-            <rect
-                x="3"
-                y="3"
-                width="7"
-                height="7"
-                rx="1.5"
-                fill="#fff"
-            />
-
-            <rect
-                x="14"
-                y="3"
-                width="7"
-                height="7"
-                rx="1.5"
-                fill="#fff"
-                opacity="0.7"
-            />
-
-            <rect
-                x="3"
-                y="14"
-                width="7"
-                height="7"
-                rx="1.5"
-                fill="#fff"
-                opacity="0.7"
-            />
-
-            <rect
-                x="14"
-                y="14"
-                width="7"
-                height="7"
-                rx="1.5"
-                fill="#fff"
-            />
-
-        </svg>
-
-    </div>
-
-    <div class="brand-text">
-
-        <div class="name">
-            pinjam.in
+            <div class="brand-text">
+                <div class="name">pinjam.in</div>
+                <div class="tag">ADMIN PANEL</div>
+            </div>
         </div>
 
-        <div class="tag">
-            ADMIN PANEL
-        </div>
-
-    </div>
-
-</div>
-
-<div class="nav-group-label">
-    Menu Utama
-</div>
-
-
-<a class="nav-item"
-   href="v_homeadmin.php">
-
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-    >
-
-        <rect
-            x="3"
-            y="3"
-            width="7"
-            height="9"
-            rx="1"
-        />
-
-        <rect
-            x="14"
-            y="3"
-            width="7"
-            height="5"
-            rx="1"
-        />
-
-        <rect
-            x="14"
-            y="12"
-            width="7"
-            height="9"
-            rx="1"
-        />
-
-        <rect
-            x="3"
-            y="16"
-            width="7"
-            height="5"
-            rx="1"
-        />
-
-    </svg>
-
-    Dashboard
-
-</a>
-
-<div class="nav-group-label">
-    Kelola Data
-</div>
-
-
-<a class="nav-item"
-   href="v_user.php">
-
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-    >
-
-        <circle
-            cx="12"
-            cy="8"
-            r="4"
-        />
-
-        <path
-            d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"
-        />
-
-    </svg>
-
-    Data User
-
-</a>
-
-
-<a class="nav-item active"
-   href="v_alat.php">
-
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-    >
-
-        <path
-            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
-        />
-
-    </svg>
-
-    Data Alat
-
-</a>
-
-
-<a class="nav-item"
-   href="v_kategori.php">
-
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-    >
-
-        <path
-            d="M20.59 13.41 11 3.83 3.83 11l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83-2.83-2.83Z"
-        />
-
-        <circle
-            cx="7"
-            cy="7"
-            r="1"
-        />
-
-    </svg>
-
-    Kategori
-
-</a>
-
-
-<a class="nav-item"
-   href="v_peminjaman.php">
-
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-    >
-
-        <path
-            d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
-        />
-
-        <rect
-            x="9"
-            y="3"
-            width="6"
-            height="4"
-            rx="1"
-        />
-
-    </svg>
-
-    Data Peminjaman
-
-</a>
-
-
-<a class="nav-item"
-   href="v_pengembalian.php">
-
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-    >
-
-        <path
-            d="M3 7v6h6"
-        />
-
-        <path
-            d="M3 13a9 9 0 1 0 3-6.7L3 9"
-        />
-
-    </svg>
-
-    Data Pengembalian
-
-</a>
-
-<div class="nav-group-label">
-    Lainnya
-</div>
-
-
-<a class="nav-item"
-   href="v_log.php">
-
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-    >
-
-        <path
-            d="M12 8v4l3 3"
-        />
-
-        <circle
-            cx="12"
-            cy="12"
-            r="9"
-        />
-
-    </svg>
-
-    Log Aktivitas
-
-</a>
-
-<div class="sidebar-footer">
-
-    <a
-        class="logout-btn"
-        href="v_logout.php"
-    >
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-        >
-
-            <path
-                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h4"
-            />
-
-            <path
-                d="M16 17l5-5-5-5"
-            />
-
-            <path
-                d="M21 12H9"
-            />
-
-        </svg>
-
-        Keluar
-
-    </a>
-
-</div>
-
-</aside>
-
-
-<main class="main">
-
-<div class="topbar">
-
-    <div>
-
-        <h1>
-            Edit Alat
-        </h1>
-
-        <p>
-            Ubah data alat yang tersedia dalam sistem.
-        </p>
-
-    </div>
-
-</div>
-
-
-<div class="panel">
-
-    <h2 class="panel-title">
-        Form Edit Alat
-    </h2>
-
-
-    <form
-        action="../Controller/c_alat.php"
-        method="POST"
-    >
-
-        <input
-            type="hidden"
-            name="id_alat"
-            value="<?= $alat['id_alat'] ?>"
-        >
-
-        <div class="form-group">
-
-            <label for="kode_alat">
-                Kode Alat
-            </label>
-
-            <input
-                type="text"
-                id="kode_alat"
-                name="kode_alat"
-                value="<?= htmlspecialchars($alat['kode_alat']) ?>"
-                placeholder="Masukkan kode alat"
-                required
-            >
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="nama_alat">
-                Nama Alat
-            </label>
-
-            <input
-                type="text"
-                id="nama_alat"
-                name="nama_alat"
-                value="<?= htmlspecialchars($alat['nama_alat']) ?>"
-                placeholder="Masukkan nama alat"
-                required
-            >
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="merk">
-                Merk
-            </label>
-
-            <input
-                type="text"
-                id="merk"
-                name="merk"
-                value="<?= htmlspecialchars($alat['merk'] ?? '') ?>"
-                placeholder="Masukkan merk alat"
-            >
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="jumlah">
-                Jumlah
-            </label>
-
-            <input
-                type="number"
-                id="jumlah"
-                name="jumlah"
-                value="<?= htmlspecialchars($alat['jumlah']) ?>"
-                min="1"
-                required
-            >
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="kondisi">
-                Kondisi
-            </label>
-
-            <select
-                id="kondisi"
-                name="kondisi"
-                required
-            >
-
-                <option value="">
-                    -- Pilih Kondisi --
-                </option>
-
-                <option
-                    value="baik"
-                    <?= $alat['kondisi'] == 'baik' ? 'selected' : '' ?>
-                >
-                    Baik
-                </option>
-
-                <option
-                    value="rusak_ringan"
-                    <?= $alat['kondisi'] == 'rusak_ringan' ? 'selected' : '' ?>
-                >
-                    Rusak Ringan
-                </option>
-
-                <option
-                    value="rusak_berat"
-                    <?= $alat['kondisi'] == 'rusak_berat' ? 'selected' : '' ?>
-                >
-                    Rusak Berat
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="status">
-                Status
-            </label>
-
-            <select
-                id="status"
-                name="status"
-                required
-            >
-
-                <option value="">
-                    -- Pilih Status --
-                </option>
-
-                <option
-                    value="tersedia"
-                    <?= $alat['status'] == 'tersedia' ? 'selected' : '' ?>
-                >
-                    Tersedia
-                </option>
-
-                <option
-                    value="dipinjam"
-                    <?= $alat['status'] == 'dipinjam' ? 'selected' : '' ?>
-                >
-                    Dipinjam
-                </option>
-
-                <option
-                    value="nonaktif"
-                    <?= $alat['status'] == 'nonaktif' ? 'selected' : '' ?>
-                >
-                    Nonaktif
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="deskripsi">
-                Deskripsi
-            </label>
-
-            <textarea
-                id="deskripsi"
-                name="deskripsi"
-                placeholder="Masukkan deskripsi alat"
-            ><?= htmlspecialchars($alat['deskripsi'] ?? '') ?></textarea>
-
-        </div>
-
-        <div class="form-action">
-
-            <button
-                type="submit"
-                name="edit"
-                class="btn-save"
-            >
-                Simpan Perubahan
-            </button>
-
-
-            <a
-                href="v_alat.php"
-                class="btn-cancel"
-            >
-                Kembali
+        <div class="nav-group-label">Menu Utama</div>
+        <a class="nav-item" href="v_homeadmin.php">Dashboard</a>
+
+        <div class="nav-group-label">Kelola Data</div>
+        <a class="nav-item" href="v_user.php">Data User</a>
+        <a class="nav-item active" href="v_alat.php">Data Alat</a>
+        <a class="nav-item" href="v_kategori.php">Kategori</a>
+        <a class="nav-item" href="v_peminjaman.php">Data Peminjaman</a>
+        <a class="nav-item" href="v_pengembalian.php">Data Pengembalian</a>
+
+        <div class="nav-group-label">Lainnya</div>
+        <a class="nav-item" href="v_log.php">Log Aktivitas</a>
+
+        <div class="sidebar-footer">
+            <a class="logout-btn" href="../Controller/c_logout.php">
+                Keluar
             </a>
+        </div>
+    </aside>
 
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Edit Alat</h1>
+                <p>Ubah data alat yang tersedia dalam sistem.</p>
+            </div>
         </div>
 
-    </form>
+        <div class="panel">
+            <h2 class="panel-title">Form Edit Alat</h2>
+
+            <form action="../Controller/c_alat.php" method="POST">
+
+                <input
+                    type="hidden"
+                    name="id_alat"
+                    value="<?= (int)$alat['id_alat'] ?>"
+                >
+
+                <div class="form-group">
+                    <label for="kode_alat">Kode Alat</label>
+                    <input
+                        type="text"
+                        id="kode_alat"
+                        name="kode_alat"
+                        value="<?= e($alat['kode_alat']) ?>"
+                        placeholder="Masukkan kode alat"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="nama_alat">Nama Alat</label>
+                    <input
+                        type="text"
+                        id="nama_alat"
+                        name="nama_alat"
+                        value="<?= e($alat['nama_alat']) ?>"
+                        placeholder="Masukkan nama alat"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="id_kategori">Kategori</label>
+                    <select id="id_kategori" name="id_kategori" required>
+                        <option value="">-- Pilih Kategori --</option>
+
+                        <?php foreach ($dataKategori as $kategori): ?>
+                            <option
+                                value="<?= (int)$kategori['id_kategori'] ?>"
+                                <?= (int)$alat['id_kategori'] === (int)$kategori['id_kategori']
+                                    ? 'selected'
+                                    : '' ?>
+                            >
+                                <?= e($kategori['nama_kategori']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="merk">Merk</label>
+                    <input
+                        type="text"
+                        id="merk"
+                        name="merk"
+                        value="<?= e($alat['merk']) ?>"
+                        placeholder="Masukkan merk alat"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="jumlah">Jumlah</label>
+                    <input
+                        type="number"
+                        id="jumlah"
+                        name="jumlah"
+                        value="<?= (int)$alat['jumlah'] ?>"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="kondisi">Kondisi</label>
+                    <select id="kondisi" name="kondisi" required>
+                        <option value="baik"
+                            <?= $alat['kondisi'] === 'baik' ? 'selected' : '' ?>>
+                            Baik
+                        </option>
+
+                        <option value="rusak_ringan"
+                            <?= $alat['kondisi'] === 'rusak_ringan' ? 'selected' : '' ?>>
+                            Rusak Ringan
+                        </option>
+
+                        <option value="rusak_berat"
+                            <?= $alat['kondisi'] === 'rusak_berat' ? 'selected' : '' ?>>
+                            Rusak Berat
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" required>
+                        <option value="tersedia"
+                            <?= $alat['status'] === 'tersedia' ? 'selected' : '' ?>>
+                            Tersedia
+                        </option>
+
+                        <option value="dipinjam"
+                            <?= $alat['status'] === 'dipinjam' ? 'selected' : '' ?>>
+                            Dipinjam
+                        </option>
+
+                        <option value="tidak_aktif"
+                            <?= $alat['status'] === 'tidak_aktif' ? 'selected' : '' ?>>
+                            Tidak Aktif
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi</label>
+                    <textarea
+                        id="deskripsi"
+                        name="deskripsi"
+                        placeholder="Masukkan deskripsi alat"
+                    ><?= e($alat['deskripsi']) ?></textarea>
+                </div>
+
+                <div class="form-action">
+                    <button
+                        type="submit"
+                        name="edit"
+                        value="1"
+                        class="btn-save"
+                    >
+                        Simpan Perubahan
+                    </button>
+
+                    <a href="v_alat.php" class="btn-cancel">
+                        Kembali
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </main>
 
 </div>
-
-</main>
-
-</div>
-
 </body>
-
 </html>

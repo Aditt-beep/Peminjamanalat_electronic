@@ -629,7 +629,7 @@ tbody tr:last-child td{
 
     <a
         class="nav-item"
-        href="v_log.php">
+        href="v_log_aktivitas.php">
 
         <svg
             viewBox="0 0 24 24"
